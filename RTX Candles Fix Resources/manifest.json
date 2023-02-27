@@ -1,0 +1,23 @@
+{
+	"format_version": 2,
+	"header": {
+		"name": "RTX Candles Fix",
+		"description": "Resources for the RTX Candles Fix, designed by §6MADLAD3718§r.",
+		"uuid": "d22b68d5-afc7-4dcf-8e2c-d52bdfbc1029",
+		"version": [1,0,0],
+		"min_engine_version": [1,17,30]
+	},
+	"modules": [
+		{
+			"type": "resources",
+			"uuid": "e3ecb2a5-e522-4776-ae71-a32e3912ff53",
+			"version": [1,0,0]
+		}
+	],
+	"dependencies": [
+		{
+			"version": [1,0,0],
+			"uuid": "c48c2407-babd-49b5-9c82-9d56dba9f5e9"
+		}
+	]
+}

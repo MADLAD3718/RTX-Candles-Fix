@@ -1,0 +1,335 @@
+{
+	"format_version": "1.19.50",
+	"minecraft:block": {
+		"description": {
+			"identifier": "rtxfixes:pink_candle",
+			"properties": {
+				"rtxfixes:state": [0,1,2,3],
+				"rtxfixes:lit": [
+					false,
+					true
+				],
+				"rtxfixes:waterlogged": [
+					false,
+					true
+				]
+			},
+			"menu_category": {
+				"is_hidden_in_commands": true,
+				"category": "none"
+			}
+		},
+		"components": {
+			"minecraft:geometry": "geometry.candle",
+			"minecraft:material_instances": {
+				"*": {
+					"texture": "pink_candle",
+					"render_method": "opaque"
+				}
+			},
+			"minecraft:light_dampening": 0,
+			"minecraft:selection_box": {
+				"size": [2,6,2],
+				"origin": [-1,0,-1]
+			},
+			"minecraft:collision_box": {
+				"size": [2,6,2],
+				"origin": [-1,0,-1]
+			},
+			"tag:rtx_candle": {},
+			"minecraft:loot": "loot_tables/pink_candle/1.json",
+			"minecraft:destructible_by_mining": {
+				"seconds_to_destroy": 0.06
+			},
+			"minecraft:on_interact": {
+				"condition": "(query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:pink_candle') && query.block_property('rtxfixes:state') < 3) || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:flint_and_steel') || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:fire_charge') || (query.is_item_name_any('slot.weapon.mainhand', 0, '') && query.block_property('rtxfixes:lit')) || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:water_bucket')",
+				"event": "interact"
+			}
+		},
+		"permutations": [
+			{
+				"condition": "query.block_property('rtxfixes:lit') == 1",
+				"components": {
+					"minecraft:queued_ticking": {
+						"looping": true,
+						"interval_range": [
+							40,
+							100
+						],
+						"on_tick": {
+							"event": "candle_particles"
+						}
+					},
+					"minecraft:material_instances": {
+						"*": {
+							"texture": "pink_candle_lit",
+							"render_method": "opaque",
+							"face_dimming": false,
+							"ambient_occlusion": false
+						}
+					}
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 1",
+				"components": {
+					"minecraft:geometry": "geometry.candle_2",
+					"minecraft:loot": "loot_tables/pink_candle/2.json",
+					"minecraft:selection_box": {
+						"size": [6,6,3],
+						"origin": [-3,0,-1]
+					},
+					"minecraft:collision_box": {
+						"size": [6,6,3],
+						"origin": [-3,0,-1]
+					}
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 2",
+				"components": {
+					"minecraft:geometry": "geometry.candle_3",
+					"minecraft:loot": "loot_tables/pink_candle/3.json",
+					"minecraft:selection_box": {
+						"size": [5,6,5],
+						"origin": [-2,0,-2]
+					},
+					"minecraft:collision_box": {
+						"size": [5,6,5],
+						"origin": [-2,0,-2]
+					}
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 3",
+				"components": {
+					"minecraft:geometry": "geometry.candle_4",
+					"minecraft:loot": "loot_tables/pink_candle/4.json",
+					"minecraft:selection_box": {
+						"size": [6,6,5],
+						"origin": [-3,0,-3]
+					},
+					"minecraft:collision_box": {
+						"size": [6,6,5],
+						"origin": [-3,0,-3]
+					}
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 0 && query.block_property('rtxfixes:lit')",
+				"components": {
+					"minecraft:light_emission": 3
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 1 && query.block_property('rtxfixes:lit')",
+				"components": {
+					"minecraft:light_emission": 6
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 2 && query.block_property('rtxfixes:lit')",
+				"components": {
+					"minecraft:light_emission": 9
+				}
+			},
+			{
+				"condition": "query.block_property('rtxfixes:state') == 3 && query.block_property('rtxfixes:lit')",
+				"components": {
+					"minecraft:light_emission": 12
+				}
+			}
+		],
+		"events": {
+			"interact": {
+				"sequence": [
+					{
+						"condition": "query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:pink_candle')",
+						"trigger": {
+							"event": "candle_increase_count"
+						}	
+					},
+					{
+						"condition": "query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:flint_and_steel') && !query.block_property('rtxfixes:lit') && !query.block_property('rtxfixes:waterlogged')",
+						"damage": {
+							"type": "durability",
+							"amount": 1,
+							"target": "item"
+						},
+						"trigger": {
+							"event": "candle_light"
+						}
+					},
+					{
+						"condition": "query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:fire_charge') && !query.block_property('rtxfixes:lit') && !query.block_property('rtxfixes:waterlogged')",
+						"decrement_stack": {},
+						"trigger": {
+							"event": "candle_light"
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:lit') && query.is_item_name_any('slot.weapon.mainhand', 0, '')",
+						"trigger": {
+							"event": "candle_extinguish"
+						}
+					},
+					{
+						"condition": "query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:water_bucket') && query.block_property('rtxfixes:waterlogged') == false",
+						"decrement_stack": {},
+						"trigger": {
+							"event": "candle_waterlog"
+						}
+					}
+				]
+			},
+			"candle_increase_count": {
+				"set_block_property": {
+					"rtxfixes:state": "query.block_property('rtxfixes:state') + 1"
+				},
+				"decrement_stack": {}
+			},
+			"candle_light": {
+				"set_block_property": {
+					"rtxfixes:lit": true
+				},
+				"trigger": {
+					"event": "candle_particles"
+				}
+			},
+			"candle_extinguish": {
+				"set_block_property": {
+					"rtxfixes:lit": false
+				},
+				"trigger": {
+					"event": "candle_particles_extinguish"
+				}
+			},
+			"candle_waterlog": {
+				"sequence": [
+					{
+						"run_command": {
+							"command": [
+								"loot give @s loot bucket mainhand"
+							],
+							"target": "other"
+						}
+					},
+					{
+						"condition":"query.block_property('rtxfixes:lit')",
+						"set_block_property": {
+							"rtxfixes:lit": false
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 0",
+						"run_command": {
+							"command": "structure load \"mystructure:pink_candle/0\" ~~~"
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 1",
+						"run_command": {
+							"command": "structure load \"mystructure:pink_candle/1\" ~~~"
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 2",
+						"run_command": {
+							"command": "structure load \"mystructure:pink_candle/2\" ~~~"
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 3",
+						"run_command": {
+							"command": "structure load \"mystructure:pink_candle/3\" ~~~"
+						}
+					}
+				]
+			},
+			"candle_particles": {
+				"sequence": [
+					{
+						"condition": "query.block_property('rtxfixes:state') == 0",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~ ~ ~"
+							]
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 1",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~0.125 ~ ~",
+								"particle minecraft:candle_flame_particle ~-0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 2",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~0.0625 ~ ~-0.0625",
+								"particle minecraft:candle_flame_particle ~-0.125 ~-0.0625 ~",
+								"particle minecraft:candle_flame_particle ~ ~-0.1875 ~0.125"
+							]
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 3",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~0.0625 ~ ~-0.125",
+								"particle minecraft:candle_flame_particle ~-0.125 ~-0.0625 ~-0.125",
+								"particle minecraft:candle_flame_particle ~-0.0625 ~-0.1875 ~0.0625",
+								"particle minecraft:candle_flame_particle ~0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					}
+				]
+			},
+			"candle_particles_extinguish": {
+				"sequence": [
+					{
+						"condition": "query.block_property('rtxfixes:state') == 0",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~ ~ ~"
+							]
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 1",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~0.125 ~ ~",
+								"particle minecraft:basic_smoke_particle ~-0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 2",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~0.0625 ~ ~-0.0625",
+								"particle minecraft:basic_smoke_particle ~-0.125 ~-0.0625 ~",
+								"particle minecraft:basic_smoke_particle ~ ~-0.1875 ~0.125"
+							]
+						}
+					},
+					{
+						"condition": "query.block_property('rtxfixes:state') == 3",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~0.0625 ~ ~-0.125",
+								"particle minecraft:basic_smoke_particle ~-0.125 ~-0.0625 ~-0.125",
+								"particle minecraft:basic_smoke_particle ~-0.0625 ~-0.1875 ~0.0625",
+								"particle minecraft:basic_smoke_particle ~0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					}
+				]
+			}
+		}
+	}
+}
