@@ -7,6 +7,8 @@ world.events.beforeItemUseOn.subscribe(event => {
     const source = event.source;
     const interactionBlock = source.dimension.getBlock(event.blockLocation);
 
+    // If player attempted to set the block location of a candle on fire without 
+    // interacting with the candle itself then do nothing, else let candle light event fire
     if (event.item.typeId === "minecraft:flint_and_steel") {
         let blockLocation = event.blockLocation;
         switch (event.blockFace) {
@@ -34,8 +36,10 @@ world.events.beforeItemUseOn.subscribe(event => {
         return;
     }
 
+    // If the player used a candle item on something
     if (event.item.typeId.includes("candle") === false) return;
     const itemType = event.item.typeId.slice(event.item.typeId.indexOf(":") + 1);
+    // If it was an uneaten cake replace with custom candle cake block
     if (interactionBlock.typeId === "minecraft:cake") {
         if (interactionBlock.permutation.getProperty("bite_counter").value === 0) {
             event.cancel = true;
@@ -55,6 +59,7 @@ world.events.beforeItemUseOn.subscribe(event => {
         event.cancel = true;
         return;
     }
+    // Logic for adding candles to a block space or place a candle onto a different candle type
     let blockLocation = event.blockLocation;
     const state = interactionBlock.permutation.getProperty("rtxfixes:state")?.value ?? 4;
     if (interactionBlock.hasTag("rtx_candle") === true && event.blockFace === Direction.up) {
@@ -103,6 +108,8 @@ system.run(() => {
     checkSurroundingChunks();
 })
 
+// Check surrounding chunks for already existing vanilla candles (ie. structures)
+// and replace them with custom candles, copying their properties along the way
 async function checkSurroundingChunks() {
     for (const player of world.getPlayers()) {
         for (let relChunkX = -3; relChunkX <= 3; relChunkX++) {
