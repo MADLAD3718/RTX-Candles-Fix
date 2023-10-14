@@ -4,7 +4,7 @@
 		"description": {
 			"identifier": "rtxfixes:magenta_candle",
 			"properties": {
-				"rtxfixes:state": [0,1,2,3],
+				"rtxfixes:candles": [0,1,2,3],
 				"rtxfixes:lit": [
 					false,
 					true
@@ -42,7 +42,7 @@
 				"seconds_to_destroy": 0.06
 			},
 			"minecraft:on_interact": {
-				"condition": "(query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:magenta_candle') && query.block_property('rtxfixes:state') < 3) || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:flint_and_steel') || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:fire_charge') || (query.is_item_name_any('slot.weapon.mainhand', 0, '') && query.block_property('rtxfixes:lit')) || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:water_bucket')",
+				"condition": "(query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:magenta_candle') && query.block_property('rtxfixes:candles') < 3) || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:flint_and_steel') || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:fire_charge') || (query.is_item_name_any('slot.weapon.mainhand', 0, '') && query.block_property('rtxfixes:lit')) || query.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:water_bucket')",
 				"event": "interact"
 			}
 		},
@@ -71,7 +71,7 @@
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 1",
+				"condition": "query.block_property('rtxfixes:candles') == 1",
 				"components": {
 					"minecraft:geometry": "geometry.candle_2",
 					"minecraft:loot": "loot_tables/magenta_candle/2.json",
@@ -86,7 +86,7 @@
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 2",
+				"condition": "query.block_property('rtxfixes:candles') == 2",
 				"components": {
 					"minecraft:geometry": "geometry.candle_3",
 					"minecraft:loot": "loot_tables/magenta_candle/3.json",
@@ -101,7 +101,7 @@
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 3",
+				"condition": "query.block_property('rtxfixes:candles') == 3",
 				"components": {
 					"minecraft:geometry": "geometry.candle_4",
 					"minecraft:loot": "loot_tables/magenta_candle/4.json",
@@ -116,25 +116,25 @@
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 0 && query.block_property('rtxfixes:lit')",
+				"condition": "query.block_property('rtxfixes:candles') == 0 && query.block_property('rtxfixes:lit')",
 				"components": {
 					"minecraft:light_emission": 3
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 1 && query.block_property('rtxfixes:lit')",
+				"condition": "query.block_property('rtxfixes:candles') == 1 && query.block_property('rtxfixes:lit')",
 				"components": {
 					"minecraft:light_emission": 6
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 2 && query.block_property('rtxfixes:lit')",
+				"condition": "query.block_property('rtxfixes:candles') == 2 && query.block_property('rtxfixes:lit')",
 				"components": {
 					"minecraft:light_emission": 9
 				}
 			},
 			{
-				"condition": "query.block_property('rtxfixes:state') == 3 && query.block_property('rtxfixes:lit')",
+				"condition": "query.block_property('rtxfixes:candles') == 3 && query.block_property('rtxfixes:lit')",
 				"components": {
 					"minecraft:light_emission": 12
 				}
@@ -184,7 +184,7 @@
 			},
 			"candle_increase_count": {
 				"set_block_property": {
-					"rtxfixes:state": "query.block_property('rtxfixes:state') + 1"
+					"rtxfixes:candles": "query.block_property('rtxfixes:candles') + 1"
 				},
 				"decrement_stack": {}
 			},
@@ -221,25 +221,25 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 0",
+						"condition": "query.block_property('rtxfixes:candles') == 0",
 						"run_command": {
 							"command": "structure load \"mystructure:magenta_candle/0\" ~~~"
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 1",
+						"condition": "query.block_property('rtxfixes:candles') == 1",
 						"run_command": {
 							"command": "structure load \"mystructure:magenta_candle/1\" ~~~"
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 2",
+						"condition": "query.block_property('rtxfixes:candles') == 2",
 						"run_command": {
 							"command": "structure load \"mystructure:magenta_candle/2\" ~~~"
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 3",
+						"condition": "query.block_property('rtxfixes:candles') == 3",
 						"run_command": {
 							"command": "structure load \"mystructure:magenta_candle/3\" ~~~"
 						}
@@ -249,7 +249,7 @@
 			"candle_particles": {
 				"sequence": [
 					{
-						"condition": "query.block_property('rtxfixes:state') == 0",
+						"condition": "query.block_property('rtxfixes:candles') == 0",
 						"run_command": {
 							"command": [
 								"particle minecraft:candle_flame_particle ~ ~ ~"
@@ -257,7 +257,7 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 1",
+						"condition": "query.block_property('rtxfixes:candles') == 1",
 						"run_command": {
 							"command": [
 								"particle minecraft:candle_flame_particle ~0.125 ~ ~",
@@ -266,7 +266,7 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 2",
+						"condition": "query.block_property('rtxfixes:candles') == 2",
 						"run_command": {
 							"command": [
 								"particle minecraft:candle_flame_particle ~0.0625 ~ ~-0.0625",
@@ -276,7 +276,7 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 3",
+						"condition": "query.block_property('rtxfixes:candles') == 3",
 						"run_command": {
 							"command": [
 								"particle minecraft:candle_flame_particle ~0.0625 ~ ~-0.125",
@@ -291,7 +291,7 @@
 			"candle_particles_extinguish": {
 				"sequence": [
 					{
-						"condition": "query.block_property('rtxfixes:state') == 0",
+						"condition": "query.block_property('rtxfixes:candles') == 0",
 						"run_command": {
 							"command": [
 								"particle minecraft:basic_smoke_particle ~ ~ ~"
@@ -299,7 +299,7 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 1",
+						"condition": "query.block_property('rtxfixes:candles') == 1",
 						"run_command": {
 							"command": [
 								"particle minecraft:basic_smoke_particle ~0.125 ~ ~",
@@ -308,7 +308,7 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 2",
+						"condition": "query.block_property('rtxfixes:candles') == 2",
 						"run_command": {
 							"command": [
 								"particle minecraft:basic_smoke_particle ~0.0625 ~ ~-0.0625",
@@ -318,7 +318,7 @@
 						}
 					},
 					{
-						"condition": "query.block_property('rtxfixes:state') == 3",
+						"condition": "query.block_property('rtxfixes:candles') == 3",
 						"run_command": {
 							"command": [
 								"particle minecraft:basic_smoke_particle ~0.0625 ~ ~-0.125",

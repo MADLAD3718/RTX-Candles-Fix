@@ -1,241 +1,99 @@
-import { world, Direction, Dimension, BlockLocation, MinecraftBlockTypes, Location, ItemStartUseOnEvent, ItemUseOnEvent, MinecraftEffectTypes, ItemStack, Items, system } from "@minecraft/server";
+import { BlockPermutation, ItemStack, ItemStartUseOnAfterEvent, ItemUseOnAfterEvent, ItemUseOnBeforeEvent, system, world } from "@minecraft/server";
+import { add, decrementStack, directionToVector, inSurvival, withoutNamespace } from "./util";
 
-const CHUNK_SIZE = 16;
-const checkedChunks = new Set();
+/**
+ * Executes special logic on a candle placement event.
+ * @param {ItemUseOnAfterEvent} event 
+ */
+export function placeCandle(event) {
+    if (!event.itemStack.typeId.endsWith("candle")) return;
+    const typeId = "rtxfixes:" + withoutNamespace(event.itemStack.typeId);
+    const permutation = BlockPermutation.resolve(typeId);
+    const location = add(event.block.location, directionToVector(event.blockFace));
+    event.source.dimension.getBlock(location).setPermutation(permutation);
+}
 
-world.events.beforeItemUseOn.subscribe(event => {
-    const source = event.source;
-    const interactionBlock = source.dimension.getBlock(event.blockLocation);
+/**
+ * Executes special logic on item use events.
+ * @param {ItemUseOnBeforeEvent} event 
+ */
+export function useItem(event) {
+    if (event.itemStack.typeId.endsWith("candle")) {
+        if (event.block.typeId.endsWith("cake")) return createCandleCake(event);
+        else return useCandle(event);
+    }
+    if (event.itemStack.typeId == "minecraft:flint_and_steel") return igniteCandle(event);
+    if (event.itemStack.typeId == "minecraft:bucket") return useBucket(event);
+}
 
-    // If player attempted to set the block location of a candle on fire without 
-    // interacting with the candle itself then do nothing, else let candle light event fire
-    if (event.item.typeId === "minecraft:flint_and_steel") {
-        let blockLocation = event.blockLocation;
-        switch (event.blockFace) {
-            case (Direction.up):
-                blockLocation.y++;
-                break;
-            case (Direction.down):
-                blockLocation.y--;
-                break;
-            case (Direction.north):
-                blockLocation.z--;
-                break;
-            case (Direction.south):
-                blockLocation.z++;
-                break;
-            case (Direction.east):
-                blockLocation.x++;
-                break;
-            case (Direction.west):
-                blockLocation.x--;
-        }
-        if (source.dimension.getBlock(blockLocation).hasTag("rtx_candle") === true && interactionBlock.hasTag("rtx_candle") === false) {
-            event.cancel = true;
-        }
-        return;
-    }
-
-    // If the player used a candle item on something
-    if (event.item.typeId.includes("candle") === false) return;
-    const itemType = event.item.typeId.slice(event.item.typeId.indexOf(":") + 1);
-    // If it was an uneaten cake replace with custom candle cake block
-    if (interactionBlock.typeId === "minecraft:cake") {
-        if (interactionBlock.permutation.getProperty("bite_counter").value === 0) {
-            event.cancel = true;
-            const permutation = MinecraftBlockTypes.get(`rtxfixes:${itemType}_cake`).createDefaultBlockPermutation();
-            interactionBlock.setPermutation(permutation);
-            playSound("use.candle", event.blockLocation);
-            source.runCommandAsync(`testfor @s[m=creative]`).catch(() => {
-                const itemStack = source.getComponent("minecraft:inventory").container.getItem(source.selectedSlot);
-                itemStack.amount--;
-                source.getComponent("minecraft:inventory").container.setItem(source.selectedSlot, itemStack);
-            });
-        } else if (event.blockFace === Direction.up || event.blockFace === Direction.down || source.isSneaking) event.cancel = true;
-        return;
-    }
-    const candleType = interactionBlock.typeId.slice(interactionBlock.typeId.indexOf(":") + 1);
-    if (source.isSneaking === true) {
-        event.cancel = true;
-        return;
-    }
-    // Logic for adding candles to a block space or place a candle onto a different candle type
-    let blockLocation = event.blockLocation;
-    const state = interactionBlock.permutation.getProperty("rtxfixes:state")?.value ?? 4;
-    if (interactionBlock.hasTag("rtx_candle") === true && event.blockFace === Direction.up) {
-        if (state >= 3) event.cancel = true;
-        else if (candleType !== itemType) event.cancel = true;
-        return;
-    }
-    switch (event.blockFace) {
-        case (Direction.up):
-            blockLocation.y++;
-            break;
-        case (Direction.down):
-            blockLocation.y--;
-            break;
-        case (Direction.south):
-            if (state >= 3 || candleType !== itemType) blockLocation.z++;
-            break;
-        case (Direction.north):
-            if (state >= 3 || candleType !== itemType) blockLocation.z--;
-            break;
-        case (Direction.east):
-            if (state >= 3 || candleType !== itemType) blockLocation.x++;
-            break;
-        case (Direction.west):
-            if (state >= 3 || candleType !== itemType) blockLocation.x--;
-    }
-    if (source.dimension.getBlock(blockLocation).hasTag("rtx_candle") === true) return;
+/**
+ * Creates a custom candle cake when a candle is placed on a cake.
+ * @param {ItemUseOnBeforeEvent} event 
+ */
+function createCandleCake(event) {
     event.cancel = true;
-    const supportBlock = source.dimension.getBlock(new BlockLocation(blockLocation.x, blockLocation.y - 1, blockLocation.z))
-    if (supportBlock.typeId === "minecraft:air" || supportBlock.typeId === "minecraft:water" || source.dimension.getBlock(blockLocation).typeId === "minecraft:water" || source.dimension.getBlock(blockLocation).typeId !== "minecraft:air" || supportBlock.typeId.includes("candle")) return;
-    playSound("use.candle", event.blockLocation);
-    source.runCommandAsync(`testfor @s[m=creative]`).catch(() => {
-        const itemStack = source.getComponent("minecraft:inventory").container.getItem(source.selectedSlot);
-        itemStack.amount--;
-        source.getComponent("minecraft:inventory").container.setItem(source.selectedSlot, itemStack);
-    });
-    const permutation = MinecraftBlockTypes.get(`rtxfixes:${itemType}`).createDefaultBlockPermutation();
-    source.dimension.getBlock(blockLocation).setPermutation(permutation);
-})
-
-world.events.worldInitialize.subscribe(() => {
-    checkedChunks.clear();
-})
-
-system.run(() => {
-    checkSurroundingChunks();
-})
-
-// Check surrounding chunks for already existing vanilla candles (ie. structures)
-// and replace them with custom candles, copying their properties along the way
-async function checkSurroundingChunks() {
-    for (const player of world.getPlayers()) {
-        for (let relChunkX = -3; relChunkX <= 3; relChunkX++) {
-            for (let relChunkY = -1; relChunkY <= 1; relChunkY++) {
-                for (let relChunkZ = -3; relChunkZ <= 3; relChunkZ++) {
-                    const chunkX = Math.floor(player.location.x / CHUNK_SIZE) + relChunkX;
-                    const chunkY = Math.floor(player.location.y / CHUNK_SIZE) + relChunkY;
-                    const chunkZ = Math.floor(player.location.z / CHUNK_SIZE) + relChunkZ;
-                    if (checkedChunks.has(`(${chunkX},${chunkY},${chunkZ})`)) continue;
-                    await checkChunk(player.dimension, chunkX, chunkY, chunkZ).catch(e => console.warn(e));
-                }
-            }
-        }
-    }
+    const typeId = "rtxfixes:" + withoutNamespace(event.itemStack.typeId) + "_cake";
+    const permutation = BlockPermutation.resolve(typeId);
     system.run(() => {
-        checkSurroundingChunks();
-    })
+        world.playSound("dig.candle", event.block.location);
+        event.block.setPermutation(permutation);
+        if (inSurvival(event.source)) decrementStack(event.source);
+    });
 }
 
 /**
- * Checks a given chunk for vanilla candles and replaces them with custom ones.
- * @param {Dimension} dimension The dimension the chunk is in.
- * @param {number} x The x coordinate of the origin of the chunk.
- * @param {number} y The y coordinate of the origin of the chunk.
- * @param {number} z The z coordinate of the origin of the chunk.
+ * Prevents invalid uses of vanilla
+ * candles with custom candles.
+ * @param {ItemUseOnBeforeEvent} event 
  */
-function checkChunk(dimension, x, y, z) {
-    return new Promise(resolve => {
-        const from = new BlockLocation(x * CHUNK_SIZE, y * CHUNK_SIZE, z * CHUNK_SIZE);
-        const to = new BlockLocation(from.x + 15, from.y + 15, from.z + 15);
-        for (const blockLocation of from.blocksBetween(to)) {
-            if (blockLocation.y < -64 || blockLocation.y >= 320) continue;
-            const block = dimension.getBlock(blockLocation);
-            if (block?.typeId.includes("minecraft:") !== true || block.typeId.includes("candle") === false) continue;
-            const block_type = block.typeId.slice(block.typeId.indexOf(":") + 1);
-            const permutation = MinecraftBlockTypes.get(`rtxfixes:${block_type}`).createDefaultBlockPermutation();
-            if (!block_type.includes("cake")) permutation.getProperty("rtxfixes:state").value = block.permutation.getProperty("candles").value;
-            permutation.getProperty("rtxfixes:lit").value = block.permutation.getProperty("lit").value;
-            block.setPermutation(permutation);
-        }
-        checkedChunks.add(`(${x},${y},${z})`);
-        resolve();
-    })
-}
-
-world.events.itemStartUseOn.subscribe(handleSounds);
-
-let waterlogPermutation;
-let rayBlock;
-world.events.itemUseOn.subscribe(consumeCake);
-world.events.itemUseOn.subscribe(handleWaterlog);
-world.events.itemStopUseOn.subscribe(setWaterlog);
-
-/**
- * Handles player eating a candle cake in an itemUseOn event.
- * @param {ItemUseOnEvent} event The event where the player ate some candle cake.
- */
-function consumeCake(event) {
-    const interactionBlock = event.source.dimension.getBlock(event.blockLocation);
-    if (event.item.typeId !== "" || !interactionBlock.hasTag("rtx_candle_cake") || interactionBlock.permutation.getProperty("rtxfixes:lit")?.value !== false) return;
-    event.source.addEffect(MinecraftEffectTypes.saturation, 1, 1, false);
-    const candleType = interactionBlock.typeId.slice(interactionBlock.typeId.indexOf(":") + 1, interactionBlock.typeId.indexOf("_cake"));
-    event.source.dimension.spawnItem(new ItemStack(Items.get(`minecraft:${candleType}`)), new Location(event.blockLocation.x + 0.5, event.blockLocation.y + 0.5, event.blockLocation.z + 0.5));
-    const permutation = MinecraftBlockTypes.cake.createDefaultBlockPermutation();
-    permutation.getProperty("bite_counter").value = 1;
-    interactionBlock.setPermutation(permutation);
+function useCandle(event) {
+    if (withoutNamespace(event.itemStack.typeId) != withoutNamespace(event.block.typeId)) return;
+    event.cancel = true;
+    const candles = event.block.permutation.getState("rtxfixes:candles");
+    if (candles == 3) return;
+    const permutation = event.block.permutation.withState("rtxfixes:candles", candles + 1);
+    system.run(() => {
+        world.playSound("dig.candle", event.block.location);
+        event.block.setPermutation(permutation);
+        if (inSurvival(event.source)) decrementStack(event.source);
+    });
 }
 
 /**
- * Handles waterlog specific actions based on an itemUseOn event.
- * @param {ItemUseOnEvent} event The event used to determine what waterlog actions should be taken.
+ * Handles flint and steel interactions with custom candles.
+ * @param {ItemUseOnBeforeEvent} event 
  */
-function handleWaterlog(event) {
-    if (event.item.typeId !== "minecraft:bucket") return;
-    const rayOptions = {
-        includeLiquidBlocks: true
-    }
-    rayBlock = event.source.getBlockFromViewDirection(rayOptions);
-    if (!rayBlock.permutation.getProperty("rtxfixes:waterlogged")?.value) return;
-    waterlogPermutation = rayBlock.permutation;
-    waterlogPermutation.getProperty("rtxfixes:waterlogged").value = false;
+function igniteCandle(event) {
+    if (event.block.permutation.getState("rtxfixes:lit") || event.block.permutation.getState("rtxfixes:waterlogged")) return;
+    system.run(() => world.playSound("fire.ignite", event.block.location));
 }
 
 /**
- * Sets the pending unwaterlogged block permutation upon an itemStopUseOn event.
+ * Updates the waterlogged property on custom candles when they're drained.
+ * @param {ItemUseOnBeforeEvent} event 
  */
-function setWaterlog() {
-    if (!waterlogPermutation) return;
-    rayBlock.setPermutation(waterlogPermutation);
-    waterlogPermutation = undefined;
+function useBucket(event) {
+    if (!event.block.typeId.endsWith("candle")) return;
+    const permutation = event.block.permutation.withState("rtxfixes:waterlogged", false)
+    system.run(() => event.block.setPermutation(permutation));
 }
 
 /**
- * Determines and plays sounds according to an itemStartUseOn event.
- * @param {ItemStartUseOnEvent} event The event used to determine which sound to play.
+ * Executes special logic upon interacting with a custom candle or candle cake.
+ * @param {ItemStartUseOnAfterEvent} event 
  */
-function handleSounds(event) {
-    const interactionBlock = event.source.dimension.getBlock(event.blockLocation);
-    if (interactionBlock.hasTag("rtx_candle_cake")) {
-        if (interactionBlock.permutation.getProperty("rtxfixes:lit").value === false && event.item.typeId === "minecraft:flint_and_steel") playSound("fire.ignite", event.blockLocation);
-        if (interactionBlock.permutation.getProperty("rtxfixes:lit").value === true && event.item.typeId === "") playSound("extinguish.candle", event.blockLocation);
-        if (interactionBlock.permutation.getProperty("rtxfixes:lit").value === false && event.item.typeId === "") playSound("random.burp", event.blockLocation);
-        return;
-    }
-    if (!interactionBlock.hasTag("rtx_candle")) return;
-    const candleType = interactionBlock.typeId.slice(interactionBlock.typeId.indexOf(":") + 1);
-    if (event.item.typeId.slice(event.item.typeId.indexOf(":") + 1) === candleType && interactionBlock.permutation.getProperty("rtxfixes:state").value < 3 && event.source.isSneaking === false) playSound("use.candle", event.blockLocation);
-    if (interactionBlock.permutation.getProperty("rtxfixes:lit").value === false && interactionBlock.permutation.getProperty("rtxfixes:waterlogged").value === false) {
-        if (event.item.typeId === "minecraft:flint_and_steel" || event.item.typeId === "minecraft:fire_charge") playSound("fire.ignite", event.blockLocation);
-        if (event.item.typeId === "minecraft:fire_charge") playSound("mob.ghast.fireball", event.blockLocation);
-    }
-    if (event.item.typeId === "" && interactionBlock.permutation.getProperty("rtxfixes:lit").value === true) playSound("extinguish.candle", event.blockLocation);
-    if (event.item.typeId === "minecraft:water_bucket" && interactionBlock.permutation.getProperty("rtxfixes:waterlogged").value === false) {
-        if (interactionBlock.permutation.getProperty("rtxfixes:lit").value === true) playSound("extinguish.candle", event.blockLocation);
-        playSound("bucket.empty_water", event.blockLocation);
-    }
-}
-
-/**
- * Plays a sound from a given block in the world.
- * @param {string} soundId The id of the sound to play.
- * @param {BlockLocation} blockLocation The block location of the sound.
- */
-function playSound(soundId, blockLocation) {
-    const soundOptions = {
-        location: new Location(blockLocation.x + 0.5, blockLocation.y + 0.5, blockLocation.z + 0.5)
-    }
-    world.playSound(soundId, soundOptions);
+export function interactCandle(event) {
+    if (event.itemStack) return;
+    const { block } = event;
+    if (block.typeId.endsWith("candle") || block.permutation.getState("rtxfixes:lit"))
+        world.playSound("extinguish.candle", block.location);
+    if (block.permutation.getState("rtxfixes:lit"))
+        return block.setPermutation(block.permutation.withState("rtxfixes:lit", false));
+    event.source.addEffect("saturation", 1, {amplifier: 3, showParticles: false});
+    world.playSound("random.burp", block.location);
+    const permutation = BlockPermutation.resolve("minecraft:cake", {"bite_counter": 1});
+    const candleId = withoutNamespace(block.typeId).replace("_cake", "");
+    block.setPermutation(permutation);
+    if (inSurvival(event.source))
+        event.source.dimension.spawnItem(new ItemStack(candleId), block.location);
 }

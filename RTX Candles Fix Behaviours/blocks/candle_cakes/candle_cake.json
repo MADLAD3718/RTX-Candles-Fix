@@ -86,9 +86,7 @@
 					"minecraft:material_instances": {
 						"*": {
 							"texture": "candle_lit",
-							"render_method": "opaque",
-							"face_dimming": false,
-							"ambient_occlusion": false
+							"render_method": "opaque"
 						},
 						"side": {
 							"texture": "cake_side",
@@ -145,9 +143,6 @@
 				}
 			},
 			"candle_extinguish": {
-				"set_block_property": {
-					"rtxfixes:lit": false
-				},
 				"trigger": {
 					"event": "candle_particle_extinguish"
 				}

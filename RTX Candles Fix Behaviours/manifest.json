@@ -4,8 +4,8 @@
 		"name": "RTX Candles Fix",
 		"description": "Behaviours for the RTX Candles Fix, designed by §6MADLAD3718§r.",
 		"uuid": "c48c2407-babd-49b5-9c82-9d56dba9f5e9",
-		"version": [1,0,0],
-		"min_engine_version": [1,17,30]
+		"version": [2,0,0],
+		"min_engine_version": [1,20,30]
 	},
 	"modules": [
 		{
@@ -19,17 +19,17 @@
 			"language": "javascript",
 			"uuid": "0bb709ed-e28a-4050-b94e-4aea15467786",
 			"version": [1,0,0],
-			"entry": "scripts/candles.js"
+			"entry": "scripts/main.js"
 		}
 	],
 	"dependencies": [
 		{
-			"version": [1,0,0],
+			"version": [2,0,0],
 			"uuid": "d22b68d5-afc7-4dcf-8e2c-d52bdfbc1029"
 		},
 		{
-			"uuid": "b26a4d4c-afdf-4690-88f8-931846312678",
-			"version": "1.1.0-beta"
+			"module_name": "@minecraft/server",
+			"version": "1.6.0-beta"
 		}
 	]
 }

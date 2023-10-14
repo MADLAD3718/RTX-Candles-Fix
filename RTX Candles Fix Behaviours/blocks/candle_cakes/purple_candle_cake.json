@@ -145,9 +145,6 @@
 				}
 			},
 			"candle_extinguish": {
-				"set_block_property": {
-					"rtxfixes:lit": false
-				},
 				"trigger": {
 					"event": "candle_particle_extinguish"
 				}
