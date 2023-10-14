@@ -1,4 +1,5 @@
 /** @typedef {{x: Number, y: Number, z: Number}} Vector3 */
+/** @typedef {{from: Vector3, to: Vector3}} BlockVolume */
 
 import { Direction, EntityInventoryComponent, Player } from "@minecraft/server";
 
@@ -43,6 +44,110 @@ export function add(u, v) {
         x: u.x + v.x,
         y: u.y + v.y,
         z: u.z + v.z
+    }
+}
+
+/**
+ * Returns the vector subtraction `u` - `v`.
+ * @param {Vector3} u 
+ * @param {Vector3} v 
+ * @returns {Vector3}
+ */
+export function sub(u, v) {
+    return {
+        x: u.x - v.x,
+        y: u.y - v.y,
+        z: u.z - v.z
+    }
+}
+
+/**
+ * Returns the component-wise multiplication of `u` and `v`.
+ * @param {Vector3} u 
+ * @param {Vector3 | Number} v 
+ * @returns {Vector3}
+ */
+export function mul(u, v) {
+    if (typeof v == "number") return {
+        x: u.x * v,
+        y: u.y * v,
+        z: u.z * v
+    }
+    return {
+        x: u.x * v.x,
+        y: u.y * v.y,
+        z: u.z * v.z
+    }
+}
+
+/**
+ * Returns the component-wise division of `u` and `v`.
+ * @param {Vector3} u 
+ * @param {Vector3 | Number} v 
+ * @returns {Vector3}
+ */
+export function div(u, v) {
+    if (typeof v == "number") return {
+        x: u.x / v,
+        y: u.y / v,
+        z: u.z / v
+    }
+    return {
+        x: u.x / v.x,
+        y: u.y / v.y,
+        z: u.z / v.z
+    }
+}
+
+/**
+ * Floors all the components of `v`.
+ * @param {Vector3} v 
+ * @returns {Vector3}
+ */
+export function floor(v) {
+    return {
+        x: Math.floor(v.x),
+        y: Math.floor(v.y),
+        z: Math.floor(v.z)
+    }
+}
+
+/**
+ * Returns a `Vector3` with `x` in each component.
+ * @param {Number} x 
+ * @returns {Vector3}
+ */
+export function toVec3(x) {
+    return {
+        x: x,
+        y: x,
+        z: x
+    }
+}
+
+/**
+ * Creates a cube shaped block volume based on a center and span from center point.
+ * @param {Vector3} center 
+ * @param {Vector3} span 
+ * @returns {BlockVolume}
+ */
+export function createVolumeFromCenter(center, span) {
+    return {
+        from: sub(center, span),
+        to: add(center, span)
+    }
+}
+
+/**
+ * Returns a block volume containing all blocks in a given chunk.
+ * @param {Vector3} chunk 
+ * @returns {BlockVolume}
+ */
+export function chunkToBlockVolume(chunk) {
+    const origin = mul(chunk, 16);
+    return {
+        from: origin,
+        to: add(origin, toVec3(15))
     }
 }
 
