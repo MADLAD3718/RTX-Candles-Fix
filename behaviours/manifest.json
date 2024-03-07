@@ -1,0 +1,35 @@
+{
+	"format_version": 2,
+	"header": {
+		"name": "RTX Candles Fix",
+		"description": "Behaviours for the RTX Candles Fix, designed by §6MADLAD3718§r.",
+		"uuid": "c48c2407-babd-49b5-9c82-9d56dba9f5e9",
+		"version": [2,0,0],
+		"min_engine_version": [1,20,60]
+	},
+	"modules": [
+		{
+			"type": "data",
+			"uuid": "76b6db52-7c02-456e-b0d1-df7c14c65c34",
+			"version": [1,0,0]
+		},
+		{
+			"description": "Script that implements advanced custom candle functionality.",
+			"type": "script",
+			"language": "javascript",
+			"uuid": "0bb709ed-e28a-4050-b94e-4aea15467786",
+			"entry": "scripts/main.js",
+			"version": [1,0,0]
+		}
+	],
+	"dependencies": [
+		{
+			"uuid": "d22b68d5-afc7-4dcf-8e2c-d52bdfbc1029",
+			"version": [2,0,0]
+		},
+		{
+			"module_name": "@minecraft/server",
+			"version": "1.9.0-beta"
+		}
+	]
+}

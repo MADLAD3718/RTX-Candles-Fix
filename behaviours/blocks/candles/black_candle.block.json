@@ -1,0 +1,337 @@
+{
+	"format_version": "1.20.60",
+	"minecraft:block": {
+		"description": {
+			"identifier": "rtx:black_candle",
+			"states": {
+				"rtx:candles": [0, 1, 2, 3],
+				"rtx:waterlogged": [false, true],
+				"rtx:lit": [false, true]
+			},
+			"menu_category": {
+				"is_hidden_in_commands": true,
+				"category": "none"
+			}
+		},
+		"permutations": [
+			{
+				"condition": "q.block_state('rtx:candles') == 1",
+				"components": {
+                    "minecraft:loot": "loot_tables/candles/black_candle/black_candle_1.json",
+					"minecraft:geometry": "geometry.candle_1",
+                    "minecraft:selection_box": {
+						"origin": [-3.0, 0.0, -1.0],
+						"size": [6.0, 6.0, 3.0]
+					},
+					"minecraft:collision_box": {
+						"origin": [-3.0, 0.0, -1.0],
+						"size": [6.0, 6.0, 3.0]
+					}
+				}
+			},
+            {
+				"condition": "q.block_state('rtx:candles') == 2",
+				"components": {
+                    "minecraft:loot": "loot_tables/candles/black_candle/black_candle_2.json",
+					"minecraft:geometry": "geometry.candle_2",
+					"minecraft:selection_box": {
+						"origin": [-2.0, 0.0, -2.0],
+						"size": [5.0, 6.0, 5.0]
+					},
+					"minecraft:collision_box": {
+						"origin": [-2.0, 0.0, -2.0],
+						"size": [5.0, 6.0, 5.0]
+					}
+				}
+			},
+            {
+				"condition": "q.block_state('rtx:candles') == 3",
+				"components": {
+                    "minecraft:loot": "loot_tables/candles/black_candle/black_candle_3.json",
+					"minecraft:geometry": "geometry.candle_3",
+					"minecraft:selection_box": {
+						"origin": [-3.0, 0.0, -3.0],
+						"size": [6.0, 6.0, 5.0]
+					},
+					"minecraft:collision_box": {
+						"origin": [-3.0, 0.0, -3.0],
+						"size": [6.0, 6.0, 5.0]
+					}
+				}
+			},
+            {
+                "condition": "q.block_state('rtx:candles') == 0 && q.block_state('rtx:lit')",
+                "components": { "minecraft:light_emission": 3 }
+            },
+            {
+                "condition": "q.block_state('rtx:candles') == 1 && q.block_state('rtx:lit')",
+                "components": { "minecraft:light_emission": 6 }
+            },
+            {
+                "condition": "q.block_state('rtx:candles') == 2 && q.block_state('rtx:lit')",
+                "components": { "minecraft:light_emission": 9 }
+            },
+            {
+                "condition": "q.block_state('rtx:candles') == 3 && q.block_state('rtx:lit')",
+                "components": { "minecraft:light_emission": 12 }
+            },
+            {
+                "condition": "q.block_state('rtx:lit')",
+                "components": {
+                    "minecraft:queued_ticking": {
+						"looping": true,
+						"interval_range": [40, 100],
+						"on_tick": { "event": "rtx:flame_particle" }
+					},
+                    "minecraft:material_instances": {
+                        "*": {
+                            "texture": "black_candle_lit",
+                            "render_method": "opaque",
+                            "ambient_occlusion": false,
+                            "face_dimming": false
+                        }
+                    }
+                }
+            }
+		],
+		"components": {
+			"minecraft:geometry": "geometry.candle_0",
+			"minecraft:material_instances": {
+				"*": {
+					"texture": "black_candle",
+					"render_method": "opaque",
+					"ambient_occlusion": false,
+					"face_dimming": false
+				}
+			},
+			"minecraft:destructible_by_explosion": { "explosion_resistance": 0.1 },
+			"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.1 },
+			"minecraft:loot": "loot_tables/candles/black_candle/black_candle_0.json",
+			"minecraft:light_dampening": 0,
+			"minecraft:selection_box": {
+				"origin": [-1.0, 0.0, -1.0],
+				"size": [2.0, 6.0, 2.0]
+			},
+			"minecraft:collision_box": {
+				"origin": [-1.0, 0.0, -1.0],
+				"size": [2.0, 6.0, 2.0]
+			},
+            "minecraft:on_interact": {
+                "condition": "(q.block_state('rtx:candles') < 3 && q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:black_candle')) || (q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:flint_and_steel') || q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:fire_charge')) || (q.block_state('rtx:lit') && !q.is_item_equipped) || q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:water_bucket')",
+                "event": "rtx:interact_candle"
+            },
+			"minecraft:placement_filter": {
+                "conditions": [
+                    { // Solid Blocks
+                        "allowed_faces": ["up"],
+                        "block_filter": ["cyan_terracotta", "gravel", "light_blue_concrete_powder", "polished_basalt", "red_wool", "melon_block", "gold_ore", "element_93", "blue_glazed_terracotta", "nether_gold_ore", "element_98", "red_nether_brick", "red_mushroom_block", "bamboo_block", "deepslate_bricks", "waxed_copper", "white_wool", "waxed_exposed_chiseled_copper", "end_bricks", "waxed_oxidized_chiseled_copper", "tuff_bricks", "granite", "command_block", "lime_glazed_terracotta", "element_20", "element_0", "blackstone_double_slab", "element_118", "gray_glazed_terracotta", "deepslate_tile_double_slab", "calcite", "gray_terracotta", "deepslate_copper_ore", "diamond_ore", "gray_concrete", "waxed_oxidized_cut_copper", "element_73", "green_terracotta", "chiseled_copper", "gray_wool", "green_concrete_powder", "oxidized_copper_bulb", "element_16", "waxed_exposed_copper", "loom", "diorite", "oxidized_double_cut_copper_slab", "info_update2", "dripstone_block", "blue_terracotta", "yellow_wool", "element_46", "honeycomb_block", "beacon", "mud_brick_double_slab", "red_concrete", "black_terracotta", "stripped_dark_oak_log", "crimson_hyphae", "jungle_log", "lit_redstone_ore", "stripped_mangrove_wood", "quartz_ore", "info_update"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["brown_wool", "pink_wool", "barrel", "element_68", "redstone_lamp", "mossy_cobblestone", "element_113", "stripped_crimson_hyphae", "double_stone_block_slab3", "green_concrete", "deepslate", "exposed_copper_bulb", "diamond_block", "oak_log", "waxed_weathered_cut_copper", "white_glazed_terracotta", "andesite", "exposed_double_cut_copper_slab", "purple_terracotta", "packed_ice", "polished_granite", "oxidized_cut_copper", "element_39", "packed_mud", "element_21", "element_1", "copper_ore", "element_102", "black_concrete_powder", "amethyst_block", "stripped_oak_log", "gold_block", "chiseled_bookshelf", "spruce_log", "brown_terracotta", "pink_terracotta", "carved_pumpkin", "lapis_block", "weathered_chiseled_copper", "podzol", "purple_concrete_powder", "bamboo_planks", "muddy_mangrove_roots", "noteblock", "tuff", "reserved6", "quartz_bricks", "mangrove_log", "raw_gold_block", "element_108", "weathered_double_cut_copper_slab", "mob_spawner", "deepslate_tiles", "black_wool", "mangrove_double_slab", "obsidian", "glowingobsidian", "acacia_planks", "element_85", "polished_blackstone_double_slab", "exposed_copper", "polished_deepslate_double_slab", "element_89", "waxed_copper_bulb"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["element_101", "sponge", "bone_block", "smoker", "hardened_clay", "element_112", "stripped_jungle_log", "light_gray_terracotta", "stone", "element_99", "cobbled_deepslate", "birch_log", "orange_wool", "polished_blackstone_brick_double_slab", "crimson_double_slab", "respawn_anchor", "light_gray_concrete", "element_43", "hay_block", "waxed_weathered_copper", "honey_block", "lit_pumpkin", "brown_concrete", "pink_concrete", "yellow_glazed_terracotta", "smooth_basalt", "stonecutter", "warped_planks", "element_107", "mangrove_planks", "element_77", "red_terracotta", "magenta_wool", "verdant_froglight", "waxed_weathered_copper_bulb", "magenta_glazed_terracotta", "infested_deepslate", "orange_glazed_terracotta", "emerald_block", "ancient_debris", "suspicious_sand", "dark_oak_planks", "polished_andesite", "element_116", "magenta_concrete", "deepslate_brick_double_slab", "oak_planks", "dark_oak_log", "redstone_ore", "warped_hyphae", "wood", "element_41", "ochre_froglight", "pink_glazed_terracotta", "observer", "brown_glazed_terracotta", "yellow_terracotta", "quartz_block", "silver_glazed_terracotta", "cyan_concrete_powder", "oxidized_copper", "element_19", "element_49", "stripped_bamboo_block"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["sculk_catalyst", "element_115", "cobblestone", "cherry_planks", "white_concrete_powder", "yellow_concrete", "jungle_planks", "stripped_warped_stem", "repeating_command_block", "double_wooden_slab", "double_cut_copper_slab", "sandstone", "crimson_planks", "polished_blackstone", "mycelium", "element_72", "iron_ore", "element_17", "waxed_weathered_chiseled_copper", "element_51", "element_52", "stonebrick", "oxidized_chiseled_copper", "bedrock", "smithing_table", "green_wool", "lime_concrete_powder", "netherite_block", "redstone_block", "waxed_exposed_cut_copper", "gilded_blackstone", "blue_concrete_powder", "end_stone", "polished_tuff_double_slab", "suspicious_gravel", "waxed_oxidized_copper", "glowstone", "cracked_deepslate_tiles", "element_67", "element_66", "monster_egg", "mangrove_wood", "crafting_table", "red_glazed_terracotta", "element_58", "bamboo_mosaic_double_slab", "crimson_nylium", "warped_double_slab", "purple_concrete", "waxed_exposed_copper_bulb", "coal_ore", "snow", "sand", "slime", "element_117", "polished_blackstone_bricks", "client_request_placeholder_block", "bamboo_double_slab", "chiseled_polished_blackstone", "brown_concrete_powder", "pink_concrete_powder", "cracked_deepslate_bricks", "nether_wart_block", "light_blue_glazed_terracotta"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["lit_furnace", "acacia_log", "white_terracotta", "element_84", "element_79", "basalt", "light_blue_terracotta", "element_44", "waxed_double_cut_copper_slab", "lit_redstone_lamp", "element_26", "element_6", "copper_bulb", "element_97", "element_111", "stripped_cherry_log", "dirt_with_roots", "magenta_concrete_powder", "cracked_nether_bricks", "pumpkin", "smooth_stone", "lime_concrete", "magenta_terracotta", "unknown", "light_blue_concrete", "gray_concrete_powder", "allow", "copper_block", "waxed_weathered_double_cut_copper_slab", "cut_copper", "orange_concrete_powder", "brick_block", "element_13", "polished_diorite", "cyan_glazed_terracotta", "element_62", "waxed_exposed_double_cut_copper_slab", "jukebox", "stripped_cherry_wood", "jigsaw", "shroomlight", "chiseled_deepslate", "coral_block", "raw_copper_block", "lapis_ore", "beehive", "deepslate_diamond_ore", "element_95", "birch_planks", "cyan_wool", "coal_block", "blue_wool", "clay", "element_100", "element_103", "element_104", "element_105", "element_106", "element_109", "element_110", "element_114", "stripped_warped_hyphae", "element_50", "magma"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["dirt", "deny", "bee_nest", "element_28", "element_8", "soul_soil", "cobbled_deepslate_double_slab", "soul_sand", "element_86", "reinforced_deepslate", "fletching_table", "black_glazed_terracotta", "stripped_acacia_log", "element_32", "element_87", "crimson_stem", "element_18", "tuff_brick_double_slab", "warped_wart_block", "stripped_birch_log", "structure_block", "lime_wool", "element_56", "barrier", "blue_concrete", "cherry_double_slab", "orange_terracotta", "prismarine", "element_10", "deepslate_gold_ore", "moss_block", "exposed_cut_copper", "bookshelf", "target", "sculk", "stripped_spruce_log", "waxed_oxidized_copper_bulb", "warped_nylium", "stripped_crimson_stem", "deepslate_emerald_ore", "element_37", "pearlescent_froglight", "double_stone_block_slab2", "double_stone_block_slab4", "element_64", "element_92", "grass", "furnace", "netherrack", "warped_stem", "iron_block", "element_69", "purple_glazed_terracotta", "chain_command_block", "element_91", "red_sandstone", "double_stone_block_slab", "exposed_chiseled_copper", "green_glazed_terracotta", "deepslate_redstone_ore", "mud", "light_blue_wool", "black_concrete", "tnt"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["element_83", "netherreactor", "orange_concrete", "crying_obsidian", "mud_bricks", "waxed_oxidized_double_cut_copper_slab", "sea_lantern", "budding_amethyst", "blue_ice", "element_11", "lit_blast_furnace", "cherry_wood", "deepslate_lapis_ore", "deepslate_coal_ore", "weathered_cut_copper", "cracked_polished_blackstone_bricks", "stripped_mangrove_log", "polished_tuff", "weathered_copper_bulb", "chiseled_nether_bricks", "red_concrete_powder", "light_gray_concrete_powder", "cherry_log", "cyan_concrete", "nether_brick", "deepslate_iron_ore", "element_23", "element_3", "element_22", "element_2", "element_25", "element_5", "element_24", "element_4", "element_27", "element_7", "element_29", "element_9", "camera", "waxed_cut_copper", "element_47", "emerald_ore", "brown_mushroom_block", "element_61", "dropper", "chiseled_tuff_bricks", "chemical_heat", "blast_furnace", "raw_iron_block", "dispenser", "yellow_concrete_powder", "blackstone", "lit_deepslate_redstone_ore", "element_12", "element_14", "element_15", "element_36", "element_34", "element_35", "element_33", "element_30", "element_31", "element_38", "element_59"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["element_54", "element_55", "element_57", "element_53", "element_48", "element_45", "element_42", "element_40", "element_70", "element_71", "element_76", "element_74", "element_75", "purple_wool", "element_78", "element_65", "element_60", "element_63", "element_90", "element_94", "element_96", "element_88", "element_82", "element_81", "element_80", "lit_smoker", "purpur_block", "polished_deepslate", "tuff_double_slab", "crafter", "spruce_planks", "waxed_chiseled_copper", "dried_kelp_block", "chiseled_tuff", "light_gray_wool", "white_concrete", "weathered_copper", "lime_terracotta", "lodestone", "bamboo_mosaic", "cartography_table"]
+                    },
+                    { // Glass
+                        "allowed_faces": ["up"],
+                        "block_filter": ["black_stained_glass","blue_stained_glass","brown_stained_glass","cyan_stained_glass","glass","gray_stained_glass","green_stained_glass","hard_glass","hard_stained_glass","light_blue_stained_glass","light_gray_stained_glass","lime_stained_glass","magenta_stained_glass","orange_stained_glass","pink_stained_glass","purple_stained_glass","red_stained_glass","tinted_glass","white_stained_glass","yellow_stained_glass"]
+                    },
+                    { // Fences
+                        "allowed_faces": ["up"],
+                        "block_filter": ["acacia_fence","bamboo_fence","birch_fence","cherry_fence","crimson_fence","dark_oak_fence","jungle_fence","mangrove_fence","nether_brick_fence","oak_fence","spruce_fence","warped_fence"]
+                    },
+                    { // Walls
+                        "allowed_faces": ["up"],
+                        "block_filter": ["blackstone_wall","cobbled_deepslate_wall","cobblestone_wall","deepslate_brick_wall","deepslate_tile_wall","mud_brick_wall","polished_blackstone_brick_wall","polished_blackstone_wall","polished_deepslate_wall"]
+                    },
+                    { // Glass Panes
+                        "allowed_faces": ["up"],
+                        "block_filter": ["black_stained_glass_pane","blue_stained_glass_pane","brown_stained_glass_pane","cyan_stained_glass_pane","glass_pane","gray_stained_glass_pane","green_stained_glass_pane","hard_glass_pane","hard_stained_glass_pane","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lime_stained_glass_pane","magenta_stained_glass_pane","orange_stained_glass_pane","pink_stained_glass_pane","purple_stained_glass_pane","red_stained_glass_pane","white_stained_glass_pane","yellow_stained_glass_pane"]
+                    },
+                    { // Slabs
+                        "allowed_faces": ["up"],
+                        "block_filter": [{"name":"bamboo_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"bamboo_mosaic_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"bamboo_mosaic_slab","states":{"minecraft:vertical_half":"top"}},{"name":"bamboo_slab","states":{"minecraft:vertical_half":"top"}},{"name":"blackstone_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"blackstone_slab","states":{"minecraft:vertical_half":"top"}},{"name":"cherry_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"cherry_slab","states":{"minecraft:vertical_half":"top"}},{"name":"cobbled_deepslate_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"cobbled_deepslate_slab","states":{"minecraft:vertical_half":"top"}},{"name":"crimson_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"crimson_slab","states":{"minecraft:vertical_half":"top"}},{"name":"cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"deepslate_brick_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"deepslate_brick_slab","states":{"minecraft:vertical_half":"top"}},{"name":"deepslate_tile_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"deepslate_tile_slab","states":{"minecraft:vertical_half":"top"}},{"name":"double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"double_stone_block_slab","states":{"minecraft:vertical_half":"top"}},{"name":"double_stone_block_slab2","states":{"minecraft:vertical_half":"top"}},{"name":"double_stone_block_slab3","states":{"minecraft:vertical_half":"top"}},{"name":"double_stone_block_slab4","states":{"minecraft:vertical_half":"top"}},{"name":"double_wooden_slab","states":{"minecraft:vertical_half":"top"}},{"name":"exposed_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"exposed_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"mangrove_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"mangrove_slab","states":{"minecraft:vertical_half":"top"}},{"name":"mud_brick_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"mud_brick_slab","states":{"minecraft:vertical_half":"top"}},{"name":"oxidized_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"oxidized_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"polished_blackstone_brick_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"polished_blackstone_brick_slab","states":{"minecraft:vertical_half":"top"}},{"name":"polished_blackstone_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"polished_blackstone_slab","states":{"minecraft:vertical_half":"top"}},{"name":"polished_deepslate_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"polished_deepslate_slab","states":{"minecraft:vertical_half":"top"}},{"name":"stone_block_slab","states":{"minecraft:vertical_half":"top"}},{"name":"stone_block_slab2","states":{"minecraft:vertical_half":"top"}},{"name":"stone_block_slab3","states":{"minecraft:vertical_half":"top"}},{"name":"stone_block_slab4","states":{"minecraft:vertical_half":"top"}},{"name":"warped_double_slab","states":{"minecraft:vertical_half":"top"}},{"name":"warped_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_exposed_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_exposed_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_oxidized_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_oxidized_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_weathered_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"waxed_weathered_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"weathered_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"weathered_double_cut_copper_slab","states":{"minecraft:vertical_half":"top"}},{"name":"wooden_slab","states":{"minecraft:vertical_half":"top"}}]
+                    },
+                    { // Trapdoors
+                        "allowed_faces": ["up"],
+                        "block_filter": [{"name":"acacia_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"bamboo_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"birch_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"cherry_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"crimson_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"dark_oak_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"iron_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"jungle_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"mangrove_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"spruce_trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"trapdoor","states":{"upside_down_bit":true,"open_bit":false}},{"name":"warped_trapdoor","states":{"upside_down_bit":true,"open_bit":false}}]
+                    },
+                    { // Miscellaneous
+                        "allowed_faces": ["up"],
+                        "block_filter": ["scaffolding", "iron_bars", "grindstone"]
+                    },
+                    {
+                        "allowed_faces": ["up"],
+                        "block_filter": ["piston", "sticky_piston"]
+                    },
+                    { // Stairs
+                        "allowed_faces": ["up"],
+                        "block_filter": [{"name":"acacia_stairs","states":{"upside_down_bit":true}},{"name":"andesite_stairs","states":{"upside_down_bit":true}},{"name":"bamboo_mosaic_stairs","states":{"upside_down_bit":true}},{"name":"bamboo_stairs","states":{"upside_down_bit":true}},{"name":"birch_stairs","states":{"upside_down_bit":true}},{"name":"blackstone_stairs","states":{"upside_down_bit":true}},{"name":"brick_stairs","states":{"upside_down_bit":true}},{"name":"cherry_stairs","states":{"upside_down_bit":true}},{"name":"cobbled_deepslate_stairs","states":{"upside_down_bit":true}},{"name":"crimson_stairs","states":{"upside_down_bit":true}},{"name":"cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"dark_oak_stairs","states":{"upside_down_bit":true}},{"name":"dark_prismarine_stairs","states":{"upside_down_bit":true}},{"name":"deepslate_brick_stairs","states":{"upside_down_bit":true}},{"name":"deepslate_tile_stairs","states":{"upside_down_bit":true}},{"name":"diorite_stairs","states":{"upside_down_bit":true}},{"name":"end_brick_stairs","states":{"upside_down_bit":true}},{"name":"exposed_cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"granite_stairs","states":{"upside_down_bit":true}},{"name":"jungle_stairs","states":{"upside_down_bit":true}},{"name":"mangrove_stairs","states":{"upside_down_bit":true}},{"name":"mossy_cobblestone_stairs","states":{"upside_down_bit":true}},{"name":"mossy_stone_brick_stairs","states":{"upside_down_bit":true}},{"name":"mud_brick_stairs","states":{"upside_down_bit":true}},{"name":"nether_brick_stairs","states":{"upside_down_bit":true}},{"name":"normal_stone_stairs","states":{"upside_down_bit":true}},{"name":"oak_stairs","states":{"upside_down_bit":true}},{"name":"oxidized_cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"polished_andesite_stairs","states":{"upside_down_bit":true}},{"name":"polished_blackstone_brick_stairs","states":{"upside_down_bit":true}},{"name":"polished_blackstone_stairs","states":{"upside_down_bit":true}},{"name":"polished_deepslate_stairs","states":{"upside_down_bit":true}},{"name":"polished_diorite_stairs","states":{"upside_down_bit":true}},{"name":"polished_granite_stairs","states":{"upside_down_bit":true}},{"name":"prismarine_bricks_stairs","states":{"upside_down_bit":true}},{"name":"prismarine_stairs","states":{"upside_down_bit":true}},{"name":"purpur_stairs","states":{"upside_down_bit":true}},{"name":"quartz_stairs","states":{"upside_down_bit":true}},{"name":"red_nether_brick_stairs","states":{"upside_down_bit":true}},{"name":"red_sandstone_stairs","states":{"upside_down_bit":true}},{"name":"sandstone_stairs","states":{"upside_down_bit":true}},{"name":"smooth_quartz_stairs","states":{"upside_down_bit":true}},{"name":"smooth_red_sandstone_stairs","states":{"upside_down_bit":true}},{"name":"smooth_sandstone_stairs","states":{"upside_down_bit":true}},{"name":"spruce_stairs","states":{"upside_down_bit":true}},{"name":"stone_brick_stairs","states":{"upside_down_bit":true}},{"name":"stone_stairs","states":{"upside_down_bit":true}},{"name":"warped_stairs","states":{"upside_down_bit":true}},{"name":"waxed_cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"waxed_exposed_cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"waxed_oxidized_cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"waxed_weathered_cut_copper_stairs","states":{"upside_down_bit":true}},{"name":"weathered_cut_copper_stairs","states":{"upside_down_bit":true}}]
+                    }
+                ]
+            }
+		},
+		"events": {
+            "rtx:interact_candle": {
+                "sequence": [
+                    {
+                        "condition": "q.block_state('rtx:candles') < 3 && q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:black_candle')",
+                        "trigger": { "event": "rtx:increase_candle_count" }
+                    },
+                    {
+                        "condition": "!q.block_state('rtx:lit') && !q.block_state('rtx:waterlogged') && q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:flint_and_steel')",
+                        "trigger": { "event": "rtx:light_flint_and_steel" }
+                    },
+                    {
+                        "condition": "!q.block_state('rtx:lit') && !q.block_state('rtx:waterlogged') && q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:fire_charge')",
+                        "trigger": { "event": "rtx:light_fire_charge" }
+                    },
+                    {
+                        "condition": "q.block_state('rtx:lit') && !q.is_item_equipped",
+                        "trigger": { "event": "rtx:extinguish" }
+                    },
+                    {
+                        "condition": "!q.block_state('rtx:waterlogged') && q.is_item_name_any('slot.weapon.mainhand', 0, 'minecraft:water_bucket')",
+                        "trigger": { "event": "rtx:waterlog" }
+                    }
+                ]
+            },
+            "rtx:increase_candle_count": {
+                "set_block_state": { "rtx:candles": "q.block_state('rtx:candles') + 1" },
+                "run_command": { "command": ["playsound use.candle @a ~~~"] },
+                "decrement_stack": {}
+            },
+            "rtx:light_flint_and_steel": {
+                "set_block_state": { "rtx:lit": true },
+                "run_command": { "command": ["playsound fire.ignite @a ~~~"] },
+                "damage": {
+                    "type": "durability",
+                    "target": "item",
+                    "amount": 1
+                },
+                "trigger": { "event": "rtx:flame_particle" }
+            },
+            "rtx:light_fire_charge": {
+                "set_block_state": { "rtx:lit": true },
+                "run_command": { "command": ["playsound mob.ghast.fireball @a ~~~"] },
+                "decrement_stack": {},
+                "trigger": { "event": "rtx:flame_particle" }
+            },
+            "rtx:extinguish": {
+                "set_block_state": { "rtx:lit": false },
+                "run_command": { "command": ["playsound extinguish.candle @a ~~~"] },
+                "trigger": { "event": "rtx:smoke_particle" }
+            },
+            "rtx:waterlog": {
+                "decrement_stack": {},
+                "run_command": { "command": ["playsound bucket.empty_water @a ~~~"] }
+            },
+            "rtx:flame_particle": {
+				"sequence": [
+					{
+						"condition": "q.block_state('rtx:candles') == 0",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~ ~ ~"
+							]
+						}
+					},
+					{
+						"condition": "q.block_state('rtx:candles') == 1",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~0.125 ~ ~",
+								"particle minecraft:candle_flame_particle ~-0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					},
+					{
+						"condition": "q.block_state('rtx:candles') == 2",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~0.0625 ~ ~-0.0625",
+								"particle minecraft:candle_flame_particle ~-0.125 ~-0.0625 ~",
+								"particle minecraft:candle_flame_particle ~ ~-0.1875 ~0.125"
+							]
+						}
+					},
+					{
+						"condition": "q.block_state('rtx:candles') == 3",
+						"run_command": {
+							"command": [
+								"particle minecraft:candle_flame_particle ~0.0625 ~ ~-0.125",
+								"particle minecraft:candle_flame_particle ~-0.125 ~-0.0625 ~-0.125",
+								"particle minecraft:candle_flame_particle ~-0.0625 ~-0.1875 ~0.0625",
+								"particle minecraft:candle_flame_particle ~0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					}
+				]
+			},
+			"rtx:smoke_particle": {
+				"sequence": [
+					{
+						"condition": "q.block_state('rtx:candles') == 0",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~ ~ ~"
+							]
+						}
+					},
+					{
+						"condition": "q.block_state('rtx:candles') == 1",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~0.125 ~ ~",
+								"particle minecraft:basic_smoke_particle ~-0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					},
+					{
+						"condition": "q.block_state('rtx:candles') == 2",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~0.0625 ~ ~-0.0625",
+								"particle minecraft:basic_smoke_particle ~-0.125 ~-0.0625 ~",
+								"particle minecraft:basic_smoke_particle ~ ~-0.1875 ~0.125"
+							]
+						}
+					},
+					{
+						"condition": "q.block_state('rtx:candles') == 3",
+						"run_command": {
+							"command": [
+								"particle minecraft:basic_smoke_particle ~0.0625 ~ ~-0.125",
+								"particle minecraft:basic_smoke_particle ~-0.125 ~-0.0625 ~-0.125",
+								"particle minecraft:basic_smoke_particle ~-0.0625 ~-0.1875 ~0.0625",
+								"particle minecraft:basic_smoke_particle ~0.125 ~-0.0625 ~0.0625"
+							]
+						}
+					}
+				]
+			}
+        }
+	}
+}
