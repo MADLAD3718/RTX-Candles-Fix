@@ -1,13 +1,5 @@
-import { BlockVolumeUtils, Dimension, system } from "@minecraft/server";
-import { add, stringifyVec, sub } from "../math/vectors";
-
-Dimension.prototype.clone = function (volume, location) {
-    for (const origin of BlockVolumeUtils.getBlockLocationIterator(volume)) {
-        const permutation = this.getBlock(location).permutation;
-        const target = add(origin, sub(location, volume.from));
-        this.getBlock(target).setPermutation(permutation);
-    }
-}
+import { Dimension, system } from "@minecraft/server";
+import { stringifyVec } from "../math/vectors";
 
 Dimension.prototype.loadStructure = function (path, location) {
     this.runCommandAsync(`structure load "mystructure:${path}" ${stringifyVec(location)}`);
