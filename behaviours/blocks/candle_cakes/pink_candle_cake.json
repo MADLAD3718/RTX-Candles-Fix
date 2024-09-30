@@ -1,0 +1,64 @@
+{
+    "format_version": "1.21.30",
+    "minecraft:block": {
+        "description": {
+            "identifier": "rtx:pink_candle_cake",
+            "menu_category": {
+                "is_hidden_in_commands": true,
+                "category": "none"
+            },
+            "states": {
+                "rtx:lit": [false, true]
+            }
+        },
+        "permutations": [{
+            "condition": "q.block_state('rtx:lit')",
+            "components": {
+                "minecraft:light_emission": 3,
+                "minecraft:material_instances": {
+                    "*": {
+                        "texture": "pink_candle_lit",
+                        "render_method": "opaque",
+                        "ambient_occlusion": false,
+                        "face_dimming": false
+                    },
+                    "side": { "texture": "cake_side" },
+                    "bottom": { "texture": "cake_bottom"  },
+                    "top": { "texture": "cake_top" }
+                }
+            }
+        }],
+        "components": {
+            "minecraft:custom_components": ["rtx:candle_cake"],
+            "minecraft:geometry": "geometry.candle_cake",
+            "minecraft:material_instances": {
+                "*": {
+                    "texture": "pink_candle",
+                    "render_method": "opaque",
+                    "ambient_occlusion": false,
+                    "face_dimming": false
+                },
+				"side": { "texture": "cake_side" },
+				"bottom": { "texture": "cake_bottom"  },
+				"top": { "texture": "cake_top" }
+            },
+            "minecraft:light_dampening": 0,
+            "minecraft:selection_box": {
+				"size": [14, 8, 14],
+				"origin": [-7, 0, -7]
+			},
+            "minecraft:collision_box": {
+				"size": [14, 8, 14],
+				"origin": [-7, 0, -7]
+			},
+            "minecraft:loot": "loot_tables/candles/pink_candle/pink_candle_0.json",
+            "minecraft:destructible_by_mining": {
+				"seconds_to_destroy": 0.5
+			},
+            "minecraft:tick": {
+				"looping": true,
+				"interval_range": [80, 100]
+			}
+        }
+    }
+}

@@ -1,72 +1,54 @@
-import "@minecraft/server";
-
-/** Contains properties describing the current input permissions of a player. */
-class InputPermissions {
-    /** The permission for camera input. */
-    camera: boolean;
-    /** The permission for movement input. */
-    movement: boolean;
-}
-
-/** Represents the type of camera shake being applied. */
-enum CameraShakeType {
-    /** Shakes camera as though target's X, Y, and Z coordinates are changing rapidly. */
-    Positional = "positional",
-    /** Shakes camera as though target's X and Y rotation is changing rapidly. */
-    Rotational = "rotational"
-}
-
-/** Contains methods for manipulating the camera shake applied to a player. */
-class CameraShake {
-    /** Stops the player camera's shaking. */
-    stop(): void;
-    /** Adds shaking to a player's camera with optional `intensity`, `time`, and `type`. */
-    add(intensity?: number, time?: number, type?: CameraShakeType): void;
-}
-
-/** Contains methods for manipulating the fog stack, used to determine which fog setting to use at any given time in the game. */
-class FogStack {
-    /** Pushes a new fog setting onto the top of the Fog Command layers of the players' active fog stack. */
-    add(id: string): void;
-    /** Removes all matching fog settings that match the ID. */
-    remove(id: string): void;
-}
+import "@minecraft/server"
 
 declare module "@minecraft/server" {
     interface Entity {
-        /** The current health of the entity. */
+        /** The current health of this entity. */
         health: number;
-        /** The maximum health of the entity. */
+        /** The maximum health of this entity. */
         readonly maxHealth: number;
-        /** The entity's inventory. */
+        /** This entity's inventory properties. */
         readonly inventory?: EntityInventoryComponent;
-        /** The entity's equipment. */
+        /** This entity's equipment slots. */
         readonly equipment?: EntityEquippableComponent;
-        /** Removes all tags from an entity. */
-        clearTags(): void;
-        /** Removes all effects from an entity. */
-        clearEffects(): void;
-        /** Clears this entity's inventory. */
-        clearInventory(): void;
-        /** Transfers this entity's inventory to another entity. */
-        transferInventory(entity: Entity): void;
+        /** Returns true if the entity is leashed. */
+        readonly isLeashed: boolean;
+        /**
+         * Leashes this entity to another entity.
+         * @param leashHolder The entity to leash this entity to.
+         */
+        leashTo(leashHolder: Entity): void;
+        /** Unleashes this entity if it is leashed to another entity. */
+        unleash(): void;
+        /** Number of seats for riders defined for this entity. */
+        readonly seatCount: number;
+        /**
+         * Adds an entity to this entity as a rider.
+         * @param rider Entity that will become the rider of this entity.
+         * @returns True if the rider entity was successfully added.
+         */
+        addRider(rider: Entity): boolean;
+        /** Gets a list of the all the entities currently riding this entity. */
+        getRiders(): Entity[];
+        /**
+         * Ejects the specified rider of this entity.
+         * @param rider Entity that should be ejected from this entity.
+         */
+        ejectRider(rider: Entity): void;
+        /** Ejects all riders of this entity. */
+        ejectRiders(): void;
+        /** This entity's projectile component. */
+        readonly projectile?: EntityProjectileComponent;
+        /** The entity this entity is currently riding on. */
+        readonly entityRidingOn?: Entity;
+        /** The XZ coordinates of this entity. */
+        readonly locationXZ: VectorXZ;
+        /** Returns the block this entity is standing on, if they are on the ground. */
+        getBlockStandingOn(): Block;
     }
     interface Player {
-        /** The current game mode of the player. */
-        gameMode: GameMode;
-        /** The player's inventory. */
-        readonly inventory: EntityInventoryComponent;
-        /** The player's equipment. */
-        readonly equipment: EntityEquippableComponent;
-        /** The current input permissions of the player. */
-        readonly inputPermissions: InputPermissions;
-        /** The player's camera shake configuration. */
-        readonly cameraShake: CameraShake;
-        /** The player's active fog stack. */
-        readonly fogStack: FogStack;
-        /** True if this player is currently holding an item, otherwise false. */
-        readonly isHoldingItem: boolean;
-        /** Stops all currently playing sounds for the player. */
-        stopSound(): void;
+        /** Stops a specified sound. If no sound is specified all sounds are stopped. */
+        stopSound(sound?: string): void;
+        /** Returns the item slot this player is currently holding. */
+        getHeldSlot(): ContainerSlot | undefined;
     }
 }

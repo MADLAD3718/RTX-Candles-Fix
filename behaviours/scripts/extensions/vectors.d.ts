@@ -1,8 +1,32 @@
 export type Vector3 = {x: Number, y: Number, z: Number}
 
+/** An enumeration of unit directions. */
+export enum Unit {
+    Up = { x: 0, y: 1, z: 0 },
+    Down = { x: 0, y: -1, z: 0 },
+    North = { x: 0, y: 0, z: -1 },
+    South = { x: 0, y: 0, z: 1 },
+    East = { x: 1, y: 0, z: 0 },
+    West = { x: -1, y: 0, z: 0 },
+}
+
 /**
- * Constructs a vector with all components equal to the input value.
- * @param x The specified vector.
+ * Returns a vector equivalent of the given face direction.
+ * @param direction The string direction.
+ * @returns The corresponding {@link Vector3} equivalent to the provided direction.
+ */
+export function strToDir(direction: string): Vector3;
+
+/**
+ * Returns a string equivalent of the given vector direction.
+ * @param direction The vector direction.
+ * @returns The corresponding direction string equivalent to the provided direction.
+ */
+export function dirToStr(direction: Vector3): String;
+
+/**
+ * Constructs a vector with all components equal to a specified value.
+ * @param x The specified value.
  * @returns A vector with all components equal to `x`.
  */
 export function toVec(x: Number): Vector3;
@@ -63,10 +87,10 @@ export function isinf(v: Vector3): Boolean;
 export function isfinite(v: Vector3): Boolean;
 
 /**
- * Determines if the two specified vectors are equal.
- * @param u The first vector.
- * @param v The second vector.
- * @returns Returns **True** if each component of `u` is equal to the corresponding component in `v`; otherwise **False**.
+ * Determines if two vectors are equal.
+ * @param u The first specified vector.
+ * @param v The second specified vector.
+ * @returns `true` if every component of `u` is equal to those in `v`, otherwise `false`.
  */
 export function equal(u: Vector3, v: Vector3): Boolean;
 
@@ -94,6 +118,13 @@ export function max(u: Vector3, v: Vector3): Vector3;
  * @returns The clamped value for the `v` parameter.
  */
 export function clamp(v: Vector3, min: Vector3, max: Vector3): Vector3;
+
+/**
+ * Returns the sign of `v`.
+ * @param v The input value.
+ * @returns `-1` if `v` is less than zero; `0` if `v` equals zero; and `1` if `v` is greater than zero.
+ */
+export function sign(v: Vector3): Vector3;
 
 /**
  * Returns the largest integer that is less than or equal to the specified vector.
@@ -414,3 +445,10 @@ export function lerp(u: Vector3, v: Vector3, t: Vector3 | Number): Vector3;
  * @returns The result of the spherical linear interpolation.
  */
 export function slerp(u: Vector3, v: Vector3, t: Vector3 | Number): Vector3;
+
+/**
+ * Returns the cardinal angle of a vector `v` in the xz-plane.
+ * @param v The specified vector.
+ * @returns The cardinal angle of the vector.
+ */
+export function cardinalAngle(v: Vector3): Number;

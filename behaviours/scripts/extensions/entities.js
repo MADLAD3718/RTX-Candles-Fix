@@ -1,144 +1,122 @@
-import { Entity, EntityEquippableComponent, EntityHealthComponent, EntityInventoryComponent, EquipmentSlot, GameMode, Player, TicksPerSecond } from "@minecraft/server";
+import { Entity, EntityComponentTypes, Player } from "@minecraft/server";
 
 Object.defineProperties(Entity.prototype, {
     health: {
         get() {
-            return this.getComponent(EntityHealthComponent.componentId)?.currentValue;
+            return this.getComponent(EntityComponentTypes.Health)?.currentValue;
         },
         set(v) {
-            this.getComponent(EntityHealthComponent.componentId)?.setCurrentValue(v);
+            this.getComponent(EntityComponentTypes.Health)?.setCurrentValue(v);
         }
     },
     maxHealth: {
         get() {
-            return this.getComponent(EntityHealthComponent.componentId)?.effectiveMax;
+            return this.getComponent(EntityComponentTypes.Health)?.effectiveMax;
         }
     },
     inventory: {
         get() {
-            return this.getComponent(EntityInventoryComponent.componentId);
+            return this.getComponent(EntityComponentTypes.Inventory);
         }
     },
     equipment: {
         get() {
-            return this.getComponent(EntityEquippableComponent.componentId);
+            return this.getComponent(EntityComponentTypes.Equippable);
+        }
+    },
+    isLeashed: {
+        get() {
+            const leashable = this.getComponent(EntityComponentTypes.Leashable);
+            return leashable?.isLeashed ?? false;
+        }
+    },
+    seatCount: {
+        get() {
+            const rideable = this.getComponent(EntityComponentTypes.Rideable);
+            return rideable?.seatCount ?? 0;
+        }
+    },
+    projectile: {
+        get() {
+            return this.getComponent(EntityComponentTypes.Projectile);
+        }
+    },
+    entityRidingOn: {
+        get() {
+            return this.getComponent(EntityComponentTypes.Riding)?.entityRidingOn;
+        }
+    },
+    locationXZ: {
+        get() {
+            return {x: this.location.x, z: this.location.z};
         }
     }
 });
 
-Entity.prototype.clearTags = function () {
-    for (const tag of this.getTags())
-        this.removeTag(tag);
-}
-
-Entity.prototype.clearEffects = function () {
-    for (const effect of this.getEffects())
-        this.removeEffect(effect.typeId);
-}
-
-Entity.prototype.clearInventory = function () {
-    this.inventory?.container.clearAll();
-    for (const slot in EquipmentSlot)
-        this.equipment?.getEquipmentSlot(slot).setItem();
-}
-
-Entity.prototype.transferInventory = function (entity) {
-    const other = entity.inventory?.container;
-    if (!other) return;
-    this.equipment?.transfer(other);
-    this.inventory?.container.transfer(other);
-}
-
-export const CameraShakeType = Object.freeze({
-    Positional: 'positional',
-    Rotational: 'rotational'
-});
-
-class CameraShake {
-    #player;
-    constructor(player) {
-        this.#player = player;
-    }
-    stop() {
-        this.#player.runCommand("camerashake stop @s");
-    }
-    add(intensity = 0.5, time = TicksPerSecond, type = CameraShakeType.Positional) {
-        this.#player.runCommand(`camerashake add @s ${intensity} ${time / TicksPerSecond} ${type}`);
+/** Thrown when an entity is missing a component whose values were accessed. */
+class EntityMissingComponentError extends Error {
+    /** @param {String} componentId The id of the missing component. */
+    constructor(componentId) {
+        super(`Entity does not have component "${componentId}".`);
     }
 }
 
-class InputPermissions {
-    #player;
-    constructor(player) {
-        this.#player = player;
-    }
-    get camera() {
-        return this.#player.runCommand("testfor @s[haspermission={camera=enabled}]").successCount == 1;
-    }
-    set camera(b) {
-        this.#player.runCommand(`inputpermission set @s camera ${b ? "enabled" : "disabled"}`);
-    }
-    get movement() {
-        return this.#player.runCommand("testfor @s[haspermission={movement=enabled}]").successCount == 1; 
-    }
-    set movement(b) {
-        this.#player.runCommand(`inputpermission set @s movement ${b ? "enabled" : "disabled"}`);
-    }
+Entity.prototype.leashTo = function (leashHolder) {
+    const leashable = this.getComponent(EntityComponentTypes.Leashable);
+    if (!leashable) throw new EntityMissingComponentError(EntityComponentTypes.Leashable);
+
+    return leashable.leashTo(leashHolder);
 }
 
-class FogStack {
-    #player;
-    constructor(player) {
-        this.#player = player;
-    }
-    add(id) {
-        this.#player.runCommand(`fog @s push ${id} ${id}`);
-    }
-    remove(id) {
-        this.#player.runCommand(`fog @s remove ${id}`);
-    }
+Entity.prototype.unleash = function () {
+    const leashable = this.getComponent(EntityComponentTypes.Leashable);
+    if (!leashable) throw new EntityMissingComponentError(EntityComponentTypes.Leashable);
+
+    return leashable.unleash();
 }
 
-Object.defineProperties(Player.prototype, {
-    gameMode: {
-        get() {
-            return Object.values(GameMode).find(g => this.matches({gameMode: g}));
-        },
-        set(g) {
-            this.runCommand("gamemode " + g);
-        }
-    },
-    inputPermissions: {
-        get() {
-            return new InputPermissions(this);
-        }
-    },
-    cameraShake: {
-        get() {
-            return new CameraShake(this);
-        }
-    },
-    fogStack: {
-        get() {
-            return new FogStack(this);
-        }
-    },
-    isHoldingItem: {
-        get() {
-            return this.inventory.container.getItem(this.selectedSlot) != undefined;
-        }
-    }
-});
+Entity.prototype.addRider = function (rider) {
+    const rideable = this.getComponent(EntityComponentTypes.Rideable);
+    if (!rideable) throw new EntityMissingComponentError(EntityComponentTypes.Rideable);
+
+    return rideable.addRider(rider);
+}
+
+Entity.prototype.getRiders = function () {
+    const rideable = this.getComponent(EntityComponentTypes.Rideable);
+    if (!rideable) throw new EntityMissingComponentError(EntityComponentTypes.Rideable);
+
+    return rideable.getRiders();
+}
+
+Entity.prototype.ejectRider = function (rider) {
+    const rideable = this.getComponent(EntityComponentTypes.Rideable);
+    if (!rideable) throw new EntityMissingComponentError(EntityComponentTypes.Rideable);
+
+    return rideable.ejectRider(rider);
+}
+
+Entity.prototype.ejectRiders = function () {
+    const rideable = this.getComponent(EntityComponentTypes.Rideable);
+    if (!rideable) throw new EntityMissingComponentError(EntityComponentTypes.Rideable);
+
+    return rideable.ejectRiders();
+}
+
+Entity.prototype.getBlockStandingOn = function () {
+    if (!this.isOnGround) return this.dimension.getBlock(this.location);
+    return this.dimension.getTopmostBlock(this.locationXZ);
+}
 
 Player.prototype.applyImpulse = function (vector) {
-    const {x,y,z} = vector;
+    const {x, y, z} = vector;
     this.applyKnockback(x, z, Math.hypot(x, z), y);
 }
 
-Player.prototype.clearVelocity = function () {
-    this.teleport(this.location);
+Player.prototype.stopSound = function (sound = "") {
+    this.runCommand("stopsound @s " + sound);
 }
 
-Player.prototype.stopSound = function () {
-    this.runCommand("stopsound @s");
+Player.prototype.getHeldSlot = function () {
+    return this.inventory.container.getSlot(this.selectedSlotIndex);
 }

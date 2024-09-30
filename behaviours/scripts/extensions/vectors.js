@@ -1,3 +1,32 @@
+export const Unit = Object.freeze({
+    Up: { x: 0, y: 1, z: 0 },
+    Down: { x: 0, y: -1, z: 0 },
+    North: { x: 0, y: 0, z: -1 },
+    South: { x: 0, y: 0, z: 1 },
+    East: { x: 1, y: 0, z: 0 },
+    West: { x: -1, y: 0, z: 0 }
+});
+
+export function strToDir(dir) {
+    switch (dir.toLowerCase()) {
+        case "up": return Unit.Up;
+        case "down": return Unit.Down;
+        case "north": return Unit.North;
+        case "south": return Unit.South;
+        case "east": return Unit.East;
+        case "west": return Unit.West;
+    }
+}
+
+export function dirToStr(dir) {
+    if (equal(dir, Unit.Up)) return "up";
+    if (equal(dir, Unit.Down)) return "down";
+    if (equal(dir, Unit.North)) return "north";
+    if (equal(dir, Unit.South)) return "south";
+    if (equal(dir, Unit.East)) return "east";
+    if (equal(dir, Unit.West)) return "west";
+}
+
 export function toVec(x) {
     return { x: x, y: x, z: x };
 }
@@ -58,6 +87,14 @@ export function clamp(v, min, max) {
         x: Math.min(Math.max(v.x, min.x), max.x),
         y: Math.min(Math.max(v.y, min.y), max.y),
         z: Math.min(Math.max(v.z, min.z), max.z)
+    };
+}
+
+export function sign(v) {
+    return {
+        x: Math.sign(v.x),
+        y: Math.sign(v.y),
+        z: Math.sign(v.z)
     };
 }
 
@@ -363,4 +400,10 @@ export function lerp(u, v, t) {
 export function slerp(u, v, t) {
     const omega = Math.acos(dot(u, v));
     return add(mul(u, Math.sin((1 - t) * omega)), mul(v, Math.sin(t * omega)));
+}
+
+export function cardinalAngle(v) {
+    const cos = dot(v, Unit.South);
+    const sin = dot(cross(v, Unit.South), Unit.Up);
+    return Math.atan2(sin, cos);
 }
