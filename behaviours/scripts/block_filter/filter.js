@@ -61,15 +61,14 @@ function* replaceCandles(dimension, center) {
                         "rtx:waterlogged": block.isLiquid
                     }
                 ));
-                yield;
             } else if (/^minecraft:.*candle_cake$/.test(block?.typeId)) {
                 const states = block.permutation.getAllStates();
                 block.setPermutation(BlockPermutation.resolve(
                     `rtx:${withoutNamespace(block.typeId)}`,
                     { "rtx:lit": states["lit"] }
                 ));
-                yield;
             }
+            yield;
         }
         yield;
     }
