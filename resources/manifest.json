@@ -4,6 +4,7 @@
 		"name": "RTX Candles Fix",
 		"description": "Resources for the RTX Candles Fix, designed by §6MADLAD3718§r.",
 		"uuid": "d22b68d5-afc7-4dcf-8e2c-d52bdfbc1029",
+		"pack_scope": "world",
 		"version": [2,0,0],
 		"min_engine_version": [1,21,30]
 	},
