@@ -1,4 +1,4 @@
-import { Block, BlockPermutation, GameMode, ItemStack, system, world } from "@minecraft/server";
+import { Block, BlockPermutation, GameMode, ItemComponentTypes, ItemEnchantableComponent, ItemStack, system, world } from "@minecraft/server";
 import { add, stringifyVec } from "./extensions/vectors";
 import { withoutNamespace } from "./util";
 import "./extensions/entities";
@@ -242,7 +242,9 @@ const custom_block_ids = [
 ];
 
 world.beforeEvents.playerBreakBlock.subscribe(event => {
-    const {block, dimension, player} = event, {location} = block;
+    const {block, dimension, player, itemStack} = event, {location} = block;
+    if (player.getGameMode() == GameMode.creative) return;
+    if (!itemStack?.getComponent(ItemComponentTypes.Enchantable)?.getEnchantment("minecraft:silk_touch")) return;
     event.cancel = true;
     system.run(() => {
         dimension.runCommand(`setblock ${stringifyVec(location)} air destroy`);
