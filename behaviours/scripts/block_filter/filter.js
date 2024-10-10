@@ -72,4 +72,5 @@ function* replaceCandles(dimension, center) {
         }
         yield;
     }
+    return;
 }

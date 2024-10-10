@@ -1,5 +1,5 @@
-import { Block, BlockPermutation, GameMode, ItemStack, world } from "@minecraft/server";
-import { add } from "./extensions/vectors";
+import { Block, BlockPermutation, GameMode, ItemStack, system, world } from "@minecraft/server";
+import { add, stringifyVec } from "./extensions/vectors";
 import { withoutNamespace } from "./util";
 import "./extensions/entities";
 import "./extensions/classes";
@@ -203,3 +203,50 @@ export function replaceCandle(candle) {
         }
     ));
 }
+
+const custom_block_ids = [
+    "rtx:candle",
+	"rtx:black_candle",
+	"rtx:blue_candle",
+	"rtx:brown_candle",
+	"rtx:cyan_candle",
+	"rtx:gray_candle",
+	"rtx:green_candle",
+	"rtx:light_blue_candle",
+	"rtx:light_gray_candle",
+	"rtx:lime_candle",
+	"rtx:magenta_candle",
+	"rtx:orange_candle",
+	"rtx:pink_candle",
+	"rtx:purple_candle",
+	"rtx:red_candle",
+	"rtx:white_candle",
+	"rtx:yellow_candle",
+	"rtx:candle_cake",
+	"rtx:black_candle_cake",
+	"rtx:blue_candle_cake",
+	"rtx:brown_candle_cake",
+	"rtx:cyan_candle_cake",
+	"rtx:gray_candle_cake",
+	"rtx:green_candle_cake",
+	"rtx:light_blue_candle_cake",
+	"rtx:light_gray_candle_cake",
+	"rtx:lime_candle_cake",
+	"rtx:magenta_candle_cake",
+	"rtx:orange_candle_cake",
+	"rtx:pink_candle_cake",
+	"rtx:purple_candle_cake",
+	"rtx:red_candle_cake",
+	"rtx:white_candle_cake",
+	"rtx:yellow_candle_cake"
+];
+
+world.beforeEvents.playerBreakBlock.subscribe(event => {
+    const {block, dimension, player} = event, {location} = block;
+    event.cancel = true;
+    system.run(() => {
+        dimension.runCommand(`setblock ${stringifyVec(location)} air destroy`);
+        if (player.getHeldSlot().damageSlot())
+            dimension.playSound("random.break", player.getHeadLocation());
+    });
+}, {blockTypes: custom_block_ids});
