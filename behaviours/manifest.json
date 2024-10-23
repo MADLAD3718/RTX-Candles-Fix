@@ -5,7 +5,7 @@
 		"description": "Behaviours for the RTX Candles Fix, designed by §6MADLAD3718§r.",
 		"uuid": "c48c2407-babd-49b5-9c82-9d56dba9f5e9",
 		"version": [2,0,0],
-		"min_engine_version": [1,21,30]
+		"min_engine_version": [1,21,40]
 	},
 	"modules": [
 		{
@@ -29,7 +29,7 @@
 		},
 		{
 			"module_name": "@minecraft/server",
-			"version": "1.14.0"
+			"version": "1.15.0"
 		}
 	]
 }

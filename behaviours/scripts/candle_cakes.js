@@ -1,6 +1,6 @@
 import { BlockPermutation, GameMode, ItemStack, world } from "@minecraft/server";
+import { Vec3 } from "./@madlad3718/mcveclib";
 import { withoutNamespace } from "./util";
-import { add, Unit } from "./extensions/vectors";
 
 /** @type {import("@minecraft/server").BlockCustomComponent} */
 export const candleCakeComponent = {
@@ -16,7 +16,7 @@ export const candleCakeComponent = {
                 dimension.playSound("fire.ignite", block.center());
                 dimension.spawnParticle(
                     "minecraft:candle_flame_particle",
-                    add(block.bottomCenter(), Unit.Up));
+                    Vec3.above(block.bottomCenter()));
                 if (player.getGameMode() !== GameMode.creative)
                     if (slot.damageSlot()) dimension.playSound("random.break", block.center());
                 break;
@@ -37,7 +37,7 @@ export const candleCakeComponent = {
     onTick: event => {
         const {block} = event, {permutation, dimension} = block;
         if (permutation.getState("rtx:lit")) {
-            const location = add(block.bottomCenter(), Unit.Up);
+            const location = Vec3.above(block.bottomCenter());
             dimension.spawnParticle("minecraft:candle_flame_particle", location);
             dimension.spawnParticle("minecraft:basic_smoke_particle", location);
         }

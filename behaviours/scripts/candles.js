@@ -1,9 +1,8 @@
-import { Block, BlockPermutation, GameMode, ItemComponentTypes, ItemEnchantableComponent, ItemStack, system, world } from "@minecraft/server";
-import { add, stringifyVec } from "./extensions/vectors";
+import { Block, BlockPermutation, GameMode, ItemComponentTypes, ItemStack, system, world } from "@minecraft/server";
+import { Vec3 } from "./@madlad3718/mcveclib";
 import { withoutNamespace } from "./util";
 import "./extensions/entities";
 import "./extensions/classes";
-import "./extensions/vectors";
 
 /** @type {import("@minecraft/server").BlockCustomComponent} */
 export const candleComponent = {
@@ -76,27 +75,27 @@ function spawnParticles(block, particle) {
             break;
         case 1:
             dimension.spawnParticle(particle, 
-                add(center, {x: 0.125, y: 0.0, z: 0.0}));
+                Vec3.add(center, Vec3.from(0.125, 0.0, 0.0)));
             dimension.spawnParticle(particle, 
-                add(center, {x: -0.125, y: -0.0625, z: 0.0625}));
+                Vec3.add(center, Vec3.from(-0.125, -0.0625, 0.0625)));
             break;
         case 2:
             dimension.spawnParticle(particle, 
-                add(center, {x: 0.0625, y: 0.0, z: -0.0625}));
+                Vec3.add(center, Vec3.from(0.0625, 0.0, -0.0625)));
             dimension.spawnParticle(particle, 
-                add(center, {x: -0.125, y: -0.0625, z: 0.0}));
+                Vec3.add(center, Vec3.from(-0.125, -0.0625, 0.0)));
             dimension.spawnParticle(particle, 
-                add(center, {x: 0.0, y: -0.1875, z: 0.125}));
+                Vec3.add(center, Vec3.from(0.0, -0.1875, 0.125)));
             break;
         case 3:
             dimension.spawnParticle(particle, 
-                add(center, {x: 0.0625, y: 0.0, z: -0.125}));
+                Vec3.add(center, Vec3.from(0.0625, 0.0, -0.125)));
             dimension.spawnParticle(particle, 
-                add(center, {x: -0.125, y: -0.0625, z: -0.125}));
+                Vec3.add(center, Vec3.from(-0.125, -0.0625, -0.125)));
             dimension.spawnParticle(particle, 
-                add(center, {x: -0.0625, y: -0.1875, z: 0.0625}));
+                Vec3.add(center, Vec3.from(-0.0625, -0.1875, 0.0625)));
             dimension.spawnParticle(particle, 
-                add(center, {x: 0.125, y: -0.0625, z: 0.0625}));
+                Vec3.add(center, Vec3.from(0.125, -0.0625, 0.0625)));
             break;
     }
 }
@@ -115,23 +114,23 @@ function spawnRandParticle(block, particle) {
         case 1:
             if (Math.floor(2 * Math.random()))
                 dimension.spawnParticle(particle, 
-                    add(center, {x: 0.125, y: 0.0, z: 0.0}));
+                    Vec3.add(center, Vec3.from(0.125, 0.0, 0.0)));
             else dimension.spawnParticle(particle, 
-                add(center, {x: -0.125, y: -0.0625, z: 0.0625}));
+                Vec3.add(center, Vec3.from(-0.125, -0.0625, 0.0625)));
             break;
         case 2:
             switch (Math.floor(3 * Math.random())) {
                 case 0:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: 0.0625, y: 0.0, z: -0.0625}));
+                        Vec3.add(center, Vec3.from(0.0625, 0.0, -0.0625)));
                     break;
                 case 1:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: -0.125, y: -0.0625, z: 0.0}));
+                        Vec3.add(center, Vec3.from(-0.125, -0.0625, 0.0)));
                     break;
                 case 2:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: 0.0, y: -0.1875, z: 0.125}));
+                        Vec3.add(center, Vec3.from(0.0, -0.1875, 0.125)));
                     break;
             }
             break;
@@ -139,19 +138,19 @@ function spawnRandParticle(block, particle) {
             switch (Math.floor(4 * Math.random())) {
                 case 0:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: 0.0625, y: 0.0, z: -0.125}));
+                        Vec3.add(center, Vec3.from(0.0625, 0.0, -0.125)));
                     break;
                 case 1:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: -0.125, y: -0.0625, z: -0.125}));
+                        Vec3.add(center, Vec3.from(-0.125, -0.0625, -0.125)));
                     break;
                 case 2:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: -0.0625, y: -0.1875, z: 0.0625}));
+                        Vec3.add(center, Vec3.from(-0.0625, -0.1875, 0.0625)));
                     break;
                 case 3:
                     dimension.spawnParticle(particle, 
-                        add(center, {x: 0.125, y: -0.0625, z: 0.0625}));
+                        Vec3.add(center, Vec3.from(0.125, -0.0625, 0.0625)));
                     break;
             }
             break;
@@ -196,8 +195,7 @@ export function replaceCandle(candle) {
     const {permutation} = candle;
     const states = permutation.getAllStates();
     candle.setPermutation(BlockPermutation.resolve(
-        `rtx:${withoutNamespace(candle.typeId)}`,
-        {
+        `rtx:${withoutNamespace(candle.typeId)}`, {
             "rtx:candles": states["candles"] ?? 1,
             "rtx:lit": states["lit"] ?? false
         }
@@ -247,7 +245,7 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
     if (!itemStack?.getComponent(ItemComponentTypes.Enchantable)?.getEnchantment("minecraft:silk_touch")) return;
     event.cancel = true;
     system.run(() => {
-        dimension.runCommand(`setblock ${stringifyVec(location)} air destroy`);
+        dimension.runCommand(`setblock ${Vec3.toString(location)} air destroy`);
         if (player.getHeldSlot().damageSlot())
             dimension.playSound("random.break", player.getHeadLocation());
     });
