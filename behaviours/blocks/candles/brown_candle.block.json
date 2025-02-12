@@ -1,12 +1,11 @@
 {
-	"format_version": "1.21.30",
+	"format_version": "1.21.60",
 	"minecraft:block": {
 		"description": {
 			"identifier": "rtx:brown_candle",
 			"states": {
 				"rtx:candles": [0, 1, 2, 3],
-				"rtx:lit": [false, true],
-				"rtx:waterlogged": [false, true]
+				"rtx:lit": [false, true]
 			},
 			"menu_category": {
 				"is_hidden_in_commands": true,
@@ -127,7 +126,13 @@
 				"looping": true,
 				"interval_range": [80, 100]
 			},
-			"minecraft:loot": "loot_tables/candles/brown_candle/brown_candle_0.json"
+			"minecraft:loot": "loot_tables/candles/brown_candle/brown_candle_0.json",
+			"minecraft:liquid_detection": {
+				"detection_rules": [{
+					"can_contain_liquid": true,
+					"on_liquid_touches": "blocking"
+				}]
+			}
 		}
 	}
 }

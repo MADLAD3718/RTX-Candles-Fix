@@ -4,8 +4,8 @@
 		"name": "RTX Candles Fix",
 		"description": "Behaviours for the RTX Candles Fix, designed by §6MADLAD3718§r.",
 		"uuid": "c48c2407-babd-49b5-9c82-9d56dba9f5e9",
-		"version": [2,0,0],
-		"min_engine_version": [1,21,40]
+		"version": [3,0,0],
+		"min_engine_version": [1,21,60]
 	},
 	"modules": [
 		{
@@ -25,7 +25,7 @@
 	"dependencies": [
 		{
 			"uuid": "d22b68d5-afc7-4dcf-8e2c-d52bdfbc1029",
-			"version": [2,0,0]
+			"version": [3,0,0]
 		},
 		{
 			"module_name": "@minecraft/server",

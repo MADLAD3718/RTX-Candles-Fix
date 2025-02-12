@@ -22,7 +22,7 @@ export const candleComponent = {
                 if (player.getGameMode() !== GameMode.creative) slot.decrementSlot();
                 break;
             case "minecraft:flint_and_steel":
-                if (states["rtx:lit"] || states["rtx:waterlogged"]) return;
+                if (states["rtx:lit"] || block.isWaterlogged) return;
                 block.setPermutation(permutation.withState("rtx:lit", true));
                 dimension.playSound("fire.ignite", block.center());
                 spawnParticles(block, "minecraft:candle_flame_particle");
@@ -30,27 +30,9 @@ export const candleComponent = {
                     if (slot.damageSlot()) dimension.playSound("random.break", block.center());
                 break;
             case "minecraft:water_bucket":
-                const id = withoutNamespace(block.typeId);
-                const structureId = `candles/${id}/${id}_waterlogged_${states["rtx:candles"]}`;
-                world.structureManager.place(structureId, block.dimension, block.location);
-                dimension.playSound("bucket.empty_water", block.center());
-                if (player.getGameMode() == GameMode.creative) return;
-                if (slot.amount == 1) slot.setItem(new ItemStack("minecraft:bucket"));
-                else player.runCommand("loot give @s loot bucket mainhand");
-                break;
-            case "minecraft:bucket":
-                block.setType("minecraft:air");
-                block.setPermutation(permutation.withState("rtx:waterlogged", false));
-                dimension.playSound("bucket.fill_water", block.center());
-                if (player.getGameMode() == GameMode.creative) return;
-                if (slot.amount == 1) slot.setItem(new ItemStack("minecraft:water_bucket"));
-                else player.runCommand("loot give @s loot water_bucket mainhand");
                 break;
             default:
-                if (!states["rtx:lit"]) return;
-                block.setPermutation(permutation.withState("rtx:lit", false));
-                dimension.playSound("extinguish.candle", block.center());
-                spawnParticles(block, "minecraft:basic_smoke_particle");
+                extinguishCandle(block);
         }
     },
     onTick: event => {
@@ -157,13 +139,6 @@ function spawnRandParticle(block, particle) {
     }
 }
 
-world.afterEvents.itemUseOn.subscribe(event => {
-    const {itemStack, block} = event, {permutation} = block;
-    if (itemStack.typeId !== "minecraft:bucket") return;
-    if (!/^rtx:.*candle$/.test(block.typeId)) return;
-    block.setPermutation(permutation.withState("rtx:waterlogged", false));
-});
-
 const candleIds = [
     "minecraft:candle",
     "minecraft:black_candle",
@@ -200,6 +175,14 @@ export function replaceCandle(candle) {
             "rtx:lit": states["lit"] ?? false
         }
     ));
+}
+
+function extinguishCandle(candle) {
+    const {dimension, permutation} = candle;
+    if (!permutation.getState("rtx:lit")) return;
+    candle.setPermutation(permutation.withState("rtx:lit", false));
+    dimension.playSound("extinguish.candle", candle.center());
+    spawnParticles(candle, "minecraft:basic_smoke_particle");
 }
 
 const custom_block_ids = [
@@ -250,3 +233,13 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
             dimension.playSound("random.break", player.getHeadLocation());
     });
 }, {blockTypes: custom_block_ids});
+
+world.afterEvents.playerInteractWithBlock.subscribe(event => {
+    if (event.beforeItemStack?.typeId != "minecraft:water_bucket") return;
+    const {block, blockFace, player} = event, {dimension, location} = block;
+
+    const placeBlock = player.isSneaking ? block : dimension.getBlock(Vec3.add(location, Vec3.fromDirection(blockFace)));
+    const {permutation, typeId} = placeBlock;
+    if (!/^rtx:.*candle/.test(typeId)) return;
+    placeBlock.setPermutation(permutation.withState("rtx:lit", false));
+});

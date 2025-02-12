@@ -5,8 +5,8 @@
 		"description": "Resources for the RTX Candles Fix, designed by §6MADLAD3718§r.",
 		"uuid": "d22b68d5-afc7-4dcf-8e2c-d52bdfbc1029",
 		"pack_scope": "world",
-		"version": [2,0,0],
-		"min_engine_version": [1,21,40]
+		"version": [3,0,0],
+		"min_engine_version": [1,21,60]
 	},
 	"modules": [{
 		"type": "resources",
@@ -15,6 +15,6 @@
 	}],
 	"dependencies": [{
 		"uuid": "c48c2407-babd-49b5-9c82-9d56dba9f5e9",
-		"version": [2,0,0]
+		"version": [3,0,0]
 	}]
 }
