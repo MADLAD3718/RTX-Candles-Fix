@@ -51,8 +51,7 @@ function* replaceCandles(dimension, center) {
                 block.setPermutation(BlockPermutation.resolve(
                     `rtx:${withoutNamespace(block.typeId)}`, {
                         "rtx:candles": states["candles"],
-                        "rtx:lit": states["lit"],
-                        "rtx:waterlogged": block.isLiquid
+                        "rtx:lit": states["lit"]
                     }
                 ));
             } else if (/^minecraft:.*candle_cake$/.test(block?.typeId)) {
